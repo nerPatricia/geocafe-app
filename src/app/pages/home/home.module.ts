@@ -1,3 +1,4 @@
+import { LoadingService } from './../../service/loading.service';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
@@ -21,6 +22,7 @@ const routes: Routes = [
     AppHeaderModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [HomePage]
+  declarations: [HomePage],
+  providers: [LoadingService]
 })
 export class HomePageModule {}

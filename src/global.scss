@@ -58,6 +58,12 @@ input {
     border: 0;
 }
 
+ion-tab-button {
+    --color-selected: var(--ion-color-secondary);
+    // --padding-end: 0;
+    // --padding-start: 0;
+}
+
 // padroniza o tamanho da fonte
 ion-label {
     font-size: 14px !important;
