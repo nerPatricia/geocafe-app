@@ -25,6 +25,45 @@ export class HomePage {
   // Objetos usados pra desenhar os campos
   drawItems: L.FeatureGroup = L.featureGroup();
   drawOptions;
+  drawLocal = {
+    draw: {
+      toolbar: {
+        actions: {
+          title: 'Cancelar desenho',
+          text: 'Cancelar'
+        },
+        finish: {
+          title: 'Finalizar desenho',
+          text: 'Finalizar'
+        },
+        undo: {
+          title: 'Apagar último ponto desenhado',
+          text: 'Apagar último ponto'
+        },
+        buttons: {
+          polyline: 'Desenhe uma polilinha',
+          polygon: 'Desenhe um poligono',
+        }
+      },
+      handlers: {
+        polygon: {
+          tooltip: {
+            start: 'Clique para começar a desenhar uma área.',
+            cont: 'Clique para continuar a desenhar uma área.',
+            end: 'Clique no primeiro ponto para finalizar a área.'
+          }
+        },
+        polyline: {
+          error: '<strong>Atenção:</strong> linhas da área não podem se cruzar!',
+          tooltip: {
+            start: 'Clique para começar a desenhar uma linha.',
+            cont: 'Clique para continuar a desenhar uma linha.',
+            end: 'Clique no ultimo ponto para finalizar a linha.'
+          }
+        },
+      }
+    }
+  };
 
   constructor(private authService: AuthService) {
     authService.campoControl.subscribe(data => {
@@ -82,26 +121,24 @@ export class HomePage {
       draw: {
         polyline: {
           shapeOptions: {
-              color: '#f357a1',
-              weight: 10
+            color: '#f357a1',
+            weight: 10
           }
         },
         polygon: {
-            allowIntersection: false, // Restricts shapes to simple polygons
-            drawError: {
-                color: '#e1e100', // Color the shape will turn when intersects
-                message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
-            },
-            shapeOptions: {
-                color: '#bada55'
-            }
+          allowIntersection: false, // Restricts shapes to simple polygons
+          drawError: {
+            color: '#e1e100', // Color the shape will turn when intersects
+            message: '<strong>Atenção:<strong> você não pode fazer isso!' // Message that will show when intersect
+          },
+          shapeOptions: {
+            color: '#bada55'
+          }
         },
-        circle: false, // Turns off this drawing tool
-        rectangle: {
-            shapeOptions: {
-                clickable: false
-            }
-        },
+        circle: false,
+        rectangle: false,
+        marker: false,
+        circlemarker: false
       },
       edit: {
         featureGroup: this.drawItems
