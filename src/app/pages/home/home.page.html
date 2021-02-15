@@ -3,7 +3,8 @@
 <ion-content class="ion-no-padding">
   <ion-row class="fullscreen">
     <ion-col>
-      <div id="map" style="width: 100%; height: 100%">
+      <div id="map" style="width: 100%; height: 100%" leaflet [leafletOptions]="options"
+        [leafletLayersControl]="layersControl">
       </div>
     </ion-col>
   </ion-row>

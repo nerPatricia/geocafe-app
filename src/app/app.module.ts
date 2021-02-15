@@ -11,6 +11,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HttpsRequestInterceptor } from './service/http-request.interceptor';
 import { IonicStorageModule } from '@ionic/storage';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
+
 
 @NgModule({
   declarations: [AppComponent],
@@ -20,7 +22,8 @@ import { IonicStorageModule } from '@ionic/storage';
     HttpClientModule,
     IonicStorageModule.forRoot(), 
     IonicModule.forRoot(), 
-    AppRoutingModule
+    AppRoutingModule,
+    LeafletModule
   ],
   providers: [
     StatusBar,
