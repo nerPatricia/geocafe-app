@@ -10,6 +10,7 @@ import { Storage } from '@ionic/storage';
 export class AuthService {
   private _authData: BehaviorSubject<any> | null = new BehaviorSubject(null); // prettier-ignore
   public readonly authData: Observable<any> = this._authData.asObservable(); // prettier-ignore
+  campoControl: BehaviorSubject<number> = new BehaviorSubject<number>(null);
 
   public token;
 

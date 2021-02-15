@@ -7,7 +7,7 @@ import { HomePage } from './home.page';
 import { Routes, RouterModule } from '@angular/router';
 import { AppHeaderModule } from 'src/app/components/app-header/app-header.module';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
-
+import { LeafletDrawModule } from '@asymmetrik/ngx-leaflet-draw';
 
 const routes: Routes = [
   {
@@ -23,7 +23,8 @@ const routes: Routes = [
     IonicModule,
     AppHeaderModule,
     RouterModule.forChild(routes),
-    LeafletModule
+    LeafletModule,
+    LeafletDrawModule
   ],
   declarations: [HomePage],
   providers: [LoadingService]

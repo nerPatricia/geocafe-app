@@ -12,7 +12,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HttpsRequestInterceptor } from './service/http-request.interceptor';
 import { IonicStorageModule } from '@ionic/storage';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
-
+import { LeafletDrawModule } from '@asymmetrik/ngx-leaflet-draw';
 
 @NgModule({
   declarations: [AppComponent],
@@ -23,7 +23,8 @@ import { LeafletModule } from '@asymmetrik/ngx-leaflet';
     IonicStorageModule.forRoot(), 
     IonicModule.forRoot(), 
     AppRoutingModule,
-    LeafletModule
+    LeafletModule,
+    LeafletDrawModule
   ],
   providers: [
     StatusBar,

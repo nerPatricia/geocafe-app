@@ -33,7 +33,7 @@
     "@ionic/storage": "^2.2.0",
     "@mapbox/togeojson": "^0.16.0",
     "@tmcw/togeojson": "^4.3.0",
-    "cordova-android": "8.1.0",
+    "cordova-android": "^8.1.0",
     "cordova-plugin-add-swift-support": "^2.0.2",
     "cordova-plugin-camera": "^4.1.0",
     "cordova-plugin-geolocation": "^4.0.2",
