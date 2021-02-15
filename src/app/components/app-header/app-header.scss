@@ -1,0 +1,36 @@
+ion-header {
+  --ion-background-color: var(--ion-color-primary);
+  // fundo branco com detalhes amarelo
+
+  ion-toolbar {
+    ion-buttons {
+      color: white;
+
+      .icon {
+        font-size: xx-large;
+        margin-right: 10px;
+      }
+    }
+
+    ion-title {
+      font-weight: 400;
+      color: white;
+      text-align: center;
+      padding-top: 10px;
+      // padding-left: 0; // tirar no ios
+      // margin-left: -17px; // tirar no ios
+
+      #icon-title {
+        // font-size: xx-large;
+        font-size: larger;
+      }
+
+      span {
+        font-weight: bold;
+        font-size: medium;
+        vertical-align: super;
+        padding-left: 12px;
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+ion-content {
+    --background: var(--ion-color-primary);
+}
+
+ion-list {
+    background: transparent !important;
+}
+
+ion-item {
+    --background: transparent !important;
+}
+
+ion-input {
+    --padding-start: 8px !important;
+    //border-color: var(--ion-color-dark);
+    background-color: transparent;
+}

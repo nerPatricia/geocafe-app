@@ -1,0 +1,140 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "~@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "~@ionic/angular/css/normalize.css";
+@import "~@ionic/angular/css/structure.css";
+@import "~@ionic/angular/css/typography.css";
+@import '~@ionic/angular/css/display.css';
+
+/* Optional CSS utils that can be commented out */
+@import "~@ionic/angular/css/padding.css";
+@import "~@ionic/angular/css/float-elements.css";
+@import "~@ionic/angular/css/text-alignment.css";
+@import "~@ionic/angular/css/text-transformation.css";
+@import "~@ionic/angular/css/flex-utils.css";
+
+/* Configure Leaflet */
+@import "~leaflet/dist/leaflet.css";
+
+// diminui a sombra do header 
+.header-md:after {
+    background-position: left 0 top -4px !important;
+}
+
+// tira o tracejado verde do input
+.item-interactive.ion-valid {
+    --highlight-background: none !important;
+}
+
+// tira o tracejado cinza do input
+.item-interactive.item-has-focus {
+    --highlight-background: none !important;
+}
+
+// layout do botão padrão
+.btn {
+    border-radius: 5px;
+    width: 100%;
+    height: 2.9em;
+    font-size: 1em;
+    color: white;
+    background-color: var(--ion-color-tertiary);
+}
+
+// tira a borda dos input e deixa igual o ion-input
+input {
+    border: 0;
+}
+
+// padroniza o tamanho da fonte
+ion-label {
+    font-size: 14px !important;
+}
+
+ion-datetime {
+    font-size: 14px !important;
+}
+
+ion-select {
+    font-size: 14px !important;
+}
+
+ion-input {
+    font-size: 12px !important;
+}
+
+ion-textarea {
+    font-size: 14px !important;
+}
+
+
+// formata o input do plugin ionic-selectable
+// .ionic-selectable-value-item {
+//     font-size: 0.8em;
+//     padding: 3px 10px;
+// }
+
+// estilo de modal que ocupa a tela toda
+// .default-modal .modal-wrapper {
+//     height: 100%;
+//     // top: 10%;
+//     position: absolute;
+//     display: block;
+// }
+
+// // estilo de modal que fica no centro da tela
+// .center-modal .modal-wrapper {
+//     height: 45%; // 45%
+//     margin: 20px;
+//     border-radius: 20px;
+//     display: block;
+// }
+
+// @media (max-height: 700px) {
+//     .center-modal .modal-wrapper {
+//         height: 55%;
+//     }
+// }
+
+// layout do botão branco com borda laranja
+// .btn-second {
+//     height: 2.5em; // varia de btn pra btn
+//     color: var(--ion-color-tertiary);
+//     background-color: white;
+//     border: 1px solid var(--ion-color-tertiary);
+// }
+
+// deixa a paginação dos slides em forma de linha
+// .swiper-pagination-bullet {
+//     width: 26px !important;
+//     height: 4px !important;
+//     border-radius: 0%;
+// }
+
+// alinha a paginação dos slides pra esquerda
+// .slides-left {
+//     .swiper-pagination {
+//         text-align: start !important;
+//     }
+// }
+
+// separa os bullets do slider
+// .extrato-slide .swiper-pagination {
+//     position: initial;
+
+//     .swiper-pagination-bullet {
+//         margin: 0 4px;
+//     }
+// }
