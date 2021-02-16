@@ -10,7 +10,8 @@ import { kml } from "@tmcw/togeojson";
 })
 
 export class HomePage {
-  mapErrorFlag = true;
+  map: any;
+  viewModeFlag = false;
   campoControl = 0 // 0 - apenas exibição; 1 - seleção de campo; 2 - novo campo (draw)
   // Layer base de mapa satélite
   sateliteMap = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
@@ -47,7 +48,6 @@ export class HomePage {
           text: 'Apagar último ponto'
         },
         buttons: {
-          polyline: 'Desenhe uma polilinha',
           polygon: 'Desenhe um poligono',
         }
       },
@@ -58,20 +58,47 @@ export class HomePage {
             cont: 'Clique para continuar a desenhar uma área.',
             end: 'Clique no primeiro ponto para finalizar a área.'
           }
+        }
+      }
+    }, 
+    edit: {
+      toolbar: {
+        actions: {
+            save: {
+                title: 'Salvar mudanças',
+                text: 'Salvar'
+            },
+            cancel: {
+                title: 'Cancelar edição, descarta todas as mudanças.',
+                text: 'Cancelar'
+            },
+            clearAll: {
+                title: 'Apaga todas as layers.',
+                text: 'Apagar tudo'
+            }
         },
-        polyline: {
-          error: '<strong>Atenção:</strong> linhas da área não podem se cruzar!',
+        buttons: {
+            edit: 'Editar áreas',
+            editDisabled: 'Sem áreas para editar',
+            remove: 'Apagar áreas',
+            removeDisabled: 'Sem áreas para apagar'
+        }
+      },
+      handlers: {
+        edit: {
           tooltip: {
-            start: 'Clique para começar a desenhar uma linha.',
-            cont: 'Clique para continuar a desenhar uma linha.',
-            end: 'Clique no ultimo ponto para finalizar a linha.'
+              text: 'Arraste as arestas ou marcadores para editar uma área.',
+              subtext: 'Clique em cancelar para desfazer as mudanças.'
           }
         },
+        remove: {
+            tooltip: {
+                text: 'Clique em uma área para remover.'
+            }
+        }
       }
     }
   };
-  viewMode;
-  map: any;
 
   constructor(private authService: AuthService) {
     authService.campoControl.subscribe(data => {
@@ -84,7 +111,9 @@ export class HomePage {
 
   invalidateSize() {
     if (this.map) {
-      setTimeout(() => {this.map.invalidateSize(true)}, 0);
+      setTimeout(() => {
+        this.map.invalidateSize(true)
+      }, 0);
     }
   }
 
@@ -94,7 +123,6 @@ export class HomePage {
 
   ngOnInit() { 
     this.loadGeoJson();
-
     // Objeto de controle das layers
     // baseLayers são as de "baixo", no caso, o mapa satélite; É obrigatória a seleção de ao menos uma.
     // overlays são as de "cima", layers que não são obrigatórias e sobrepõe a baseLayer. Pode ter mais de uma selecionada.
@@ -106,12 +134,10 @@ export class HomePage {
         'KML Maps': this.kmlMaps,
       }
     };
-    console.log("ngOnInit");
   }
 
   ionViewDidEnter() {
-    console.log("ionViewDidEnter");
-    this.viewMode='map';
+    this.viewModeFlag =  true;
     this.invalidateSize();
   }
 
@@ -129,19 +155,19 @@ export class HomePage {
   }
 
   public onDrawCreated(e: any) {
-    this.drawItems.addLayer((e as L.DrawEvents.Created).layer);
+    const { layerType, layer } = e;
+		if (layerType === "polygon") {
+			const polygonCoordinates = layer._latlngs;
+			console.log(polygonCoordinates);
+		}
+		this.drawItems.addLayer(e.layer);
+    // this.drawItems.addLayer((e as L.DrawEvents.Created).layer);
   }
 
   setDrawOption() {
     this.drawOptions = {
       position: 'topright',
       draw: {
-        polyline: {
-          shapeOptions: {
-            color: '#f357a1',
-            weight: 10
-          }
-        },
         polygon: {
           allowIntersection: false, // Restricts shapes to simple polygons
           drawError: {
@@ -149,9 +175,10 @@ export class HomePage {
             message: '<strong>Atenção:<strong> você não pode fazer isso!' // Message that will show when intersect
           },
           shapeOptions: {
-            color: '#bada55'
+            color: '#cefc3d'
           }
         },
+        polyline: false,
         circle: false,
         rectangle: false,
         marker: false,

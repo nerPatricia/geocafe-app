@@ -1,11 +1,13 @@
 <!-- <app-header title="cafe" [showButtonPerfil]="true"></app-header> -->
 
 <ion-content class="ion-no-padding">
-  <ion-row class="fullscreen" [hidden]="viewMode !== 'map'">
+  <ion-row class="fullscreen" [hidden]="!viewModeFlag">
     <ion-col>
       <div leaflet [leafletOptions]="options" [leafletLayersControl]="layersControl"
         (leafletMapReady)="onMapReady($event)">
-        <div *ngIf="campoControl == 2" leafletDraw [leafletDrawOptions]="drawOptions" [leafletDrawLocal]="drawLocal">
+        <div *ngIf="campoControl == 2" leafletDraw [leafletDrawOptions]="drawOptions" [leafletDrawLocal]="drawLocal"
+          (leafletDrawCreated)="onDrawCreated($event)">
+          <div [leafletLayer]="drawItems"></div>
         </div>
       </div>
     </ion-col>
