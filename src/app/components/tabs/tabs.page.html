@@ -1,5 +1,5 @@
 <ion-tabs #tabs>
-  <ion-tab-bar slot="bottom">
+  <ion-tab-bar slot="bottom" *ngIf="campoControl == 0">
     <ion-tab-button tab="campos" selected>
       <ion-icon name="apps-outline"></ion-icon>
       <ion-label>Campos</ion-label>
@@ -18,6 +18,11 @@
     <ion-tab-button tab="ajustes">
       <ion-icon name="construct-outline"></ion-icon>
       <ion-label>Ajustes</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+  <ion-tab-bar slot="bottom" *ngIf="campoControl != 0">
+    <ion-tab-button class="close" (click)="closeAddCampo()">
+      <ion-label>Sair do modo de adição de campo</ion-label>
     </ion-tab-button>
   </ion-tab-bar>
 </ion-tabs>

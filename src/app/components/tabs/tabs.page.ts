@@ -9,6 +9,7 @@ import { ActionSheetController, IonTabs } from '@ionic/angular';
 })
 export class TabsPage {
   @ViewChild('tabs') tabRef: IonTabs;
+  campoControl = 0 // 0 - apenas exibição; 1 - seleção de campo; 2 - novo campo (draw)
 
   constructor(private actionSheetCtrl: ActionSheetController, private authService: AuthService) {}
 
@@ -28,6 +29,7 @@ export class TabsPage {
           handler: () => {
             // retorna pro mapa e ativa a seleção de área que ja existe
             this.authService.campoControl.next(1);
+            this.campoControl = 1;
           }
         },
         {
@@ -36,11 +38,19 @@ export class TabsPage {
           handler: () => {
             // retorna pro mapa e ativa a opção de draw
             this.authService.campoControl.next(2);
+            this.campoControl = 2;
           }
         }
       ]
     });
     await actionSheet.present();
+  }
+
+  closeAddCampo() {
+    this.authService.campoControl.next(0);
+    this.campoControl = 0;
+    // TODO: quando fechar a adição de campo, 
+    // se não salvou o campo, apagar desenho do mapa
   }
 
 }

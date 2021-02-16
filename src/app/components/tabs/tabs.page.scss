@@ -10,3 +10,12 @@
 .button-native {
   padding: 0 !important;
 }
+
+.close {
+  max-width: 100%;
+
+  ion-label {
+    font-weight: bold;
+    color: var(--ion-color-danger-shade);
+  }
+}
