@@ -13,7 +13,7 @@ export class HomePage {
   mapErrorFlag = true;
   campoControl = 0 // 0 - apenas exibição; 1 - seleção de campo; 2 - novo campo (draw)
   // Layer base de mapa satélite
-  sateliteMap = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+  sateliteMap = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
     detectRetina: true,
     subdomains:['mt0','mt1','mt2','mt3'],
     attribution: '.....'
@@ -21,8 +21,14 @@ export class HomePage {
   // Layer de dados geoJSON iniciada vazia
   kmlMaps = L.geoJSON(null, {});
   layersControl;
-  options;
-  // Objetos usados pra desenhar os campos
+  // Objeto das opções iniciais do mapa
+  // pode ser utilizado tbm como bind no input leafletLayers
+  options = {
+    layers: [ this.sateliteMap ],
+    zoom: 14,
+    center: L.latLng([ -21.3726284, -45.5167047 ])
+  };;
+  // Objetos usados pra desenhar os campos e configurar labels
   drawItems: L.FeatureGroup = L.featureGroup();
   drawOptions;
   drawLocal = {
@@ -64,6 +70,8 @@ export class HomePage {
       }
     }
   };
+  viewMode;
+  map: any;
 
   constructor(private authService: AuthService) {
     authService.campoControl.subscribe(data => {
@@ -71,7 +79,17 @@ export class HomePage {
       if (data == 2) {
         this.setDrawOption();
       }
-    })
+    });
+  }
+
+  invalidateSize() {
+    if (this.map) {
+      setTimeout(() => {this.map.invalidateSize(true)}, 0);
+    }
+  }
+
+  onMapReady(map) {
+    this.map = map;
   }
 
   ngOnInit() { 
@@ -88,14 +106,13 @@ export class HomePage {
         'KML Maps': this.kmlMaps,
       }
     };
+    console.log("ngOnInit");
+  }
 
-    // Objeto das opções iniciais do mapa
-    // pode ser utilizado tbm como bind no input leafletLayers
-    this.options = {
-      layers: [ this.sateliteMap ],
-      zoom: 14,
-      center: L.latLng([ -21.3726284, -45.5167047 ])
-    };
+  ionViewDidEnter() {
+    console.log("ionViewDidEnter");
+    this.viewMode='map';
+    this.invalidateSize();
   }
 
   // Transforma o KML de três pontas em geoJSON e adiciona na layer
