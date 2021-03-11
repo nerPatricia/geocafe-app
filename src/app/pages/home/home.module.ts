@@ -1,3 +1,4 @@
+import { CampoModalModule } from '../../components/campo-modal/campo-modal.module';
 import { LoadingService } from './../../service/loading.service';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -24,7 +25,8 @@ const routes: Routes = [
     AppHeaderModule,
     RouterModule.forChild(routes),
     LeafletModule,
-    LeafletDrawModule
+    LeafletDrawModule,
+    CampoModalModule
   ],
   declarations: [HomePage],
   providers: [LoadingService]

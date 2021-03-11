@@ -1,18 +1,15 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar [style.--ion-background-color]="drawMode ? '#28ba62' : null">
     <ion-title>
-      <span>{{ title }}</span>
+      <span>{{ drawMessage }}</span>
     </ion-title>
     <ion-buttons *ngIf="showButtonBack != ''" slot="start">
       <!-- aqui tem que dar um pop pra ultima pagina que foi navegado e nao pro dash-->
       <ion-back-button [defaultHref]="showButtonBack"></ion-back-button>
     </ion-buttons>
-    <ion-buttons *ngIf="showButtonPerfil" slot="end" (click)="goToPerfil()">
-      <ion-icon class="icon" name="person-circle-outline"></ion-icon>
-    </ion-buttons>
 
-    <ion-buttons *ngIf="showButtonLogout" slot="end" (click)="logout()">
+    <!-- <ion-buttons *ngIf="showButtonLogout" slot="end" (click)="logout()">
       <ion-icon class="icon" name="log-out-outline"></ion-icon>
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-toolbar>
 </ion-header>

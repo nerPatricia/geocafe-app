@@ -9,13 +9,13 @@ import { ActionSheetController, IonTabs } from '@ionic/angular';
 })
 export class TabsPage {
   @ViewChild('tabs') tabRef: IonTabs;
-  campoControl = 0 // 0 - apenas exibição; 1 - seleção de campo; 2 - novo campo (draw)
+  campoControl = 0; // 0 - apenas exibição; 1 - seleção de campo; 2 - novo campo (draw)
 
   constructor(private actionSheetCtrl: ActionSheetController, private authService: AuthService) {}
 
   ionViewDidLoad() {
     console.log(this.tabRef);
-    let tab = this.tabRef.getSelected();
+    const tab = this.tabRef.getSelected();
     console.log(tab);
   }
 

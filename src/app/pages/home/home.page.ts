@@ -1,7 +1,10 @@
+import { CampoModalComponent } from '../../components/campo-modal/campo-modal';
 import { AuthService } from 'src/app/service/auth.service';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import * as L from 'leaflet';
-import { kml } from "@tmcw/togeojson";
+import { kml } from '@tmcw/togeojson';
+import { LeafletDrawDirective } from '@asymmetrik/ngx-leaflet-draw';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -12,11 +15,13 @@ import { kml } from "@tmcw/togeojson";
 export class HomePage {
   map: any;
   viewModeFlag = false;
-  campoControl = 0 // 0 - apenas exibição; 1 - seleção de campo; 2 - novo campo (draw)
+  drawMessage = 'Posicione um ponto para demarcar uma área.'; // msg no header enquanto o desenho da área é feito
+  campoControl = 0; // 0 - apenas exibição; 1 - seleção de campo; 2 - novo campo (draw)
+  campoList = []; // lista de áreas de desenho completo
   // Layer base de mapa satélite
   sateliteMap = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
     detectRetina: true,
-    subdomains:['mt0','mt1','mt2','mt3'],
+    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
     attribution: '.....'
   });
   // Layer de dados geoJSON iniciada vazia
@@ -28,7 +33,7 @@ export class HomePage {
     layers: [ this.sateliteMap ],
     zoom: 14,
     center: L.latLng([ -21.3726284, -45.5167047 ])
-  };;
+  };
   // Objetos usados pra desenhar os campos e configurar labels
   drawItems: L.FeatureGroup = L.featureGroup();
   drawOptions;
@@ -54,13 +59,16 @@ export class HomePage {
       handlers: {
         polygon: {
           tooltip: {
-            start: 'Clique para começar a desenhar uma área.',
-            cont: 'Clique para continuar a desenhar uma área.',
-            end: 'Clique no primeiro ponto para finalizar a área.'
+            start: 'Posicione o primeiro ponto da área.',
+            cont: 'Posicione um ponto para continuar a demarcar uma área.',
+            end: 'Toque no primeiro ponto para finalizar a área.'
           }
+        },
+        polyline: {
+          error: '<strong>Atenção:<strong> você não pode fazer isso!'
         }
       }
-    }, 
+    },
     edit: {
       toolbar: {
         actions: {
@@ -100,7 +108,11 @@ export class HomePage {
     }
   };
 
-  constructor(private authService: AuthService) {
+
+  @ViewChild(LeafletDrawDirective)
+  leafletDirective: LeafletDrawDirective;
+
+  constructor(private authService: AuthService, private modalCtrl: ModalController) {
     authService.campoControl.subscribe(data => {
       this.campoControl = data;
       if (data == 2) {
@@ -112,7 +124,7 @@ export class HomePage {
   invalidateSize() {
     if (this.map) {
       setTimeout(() => {
-        this.map.invalidateSize(true)
+        this.map.invalidateSize(true);
       }, 0);
     }
   }
@@ -121,7 +133,26 @@ export class HomePage {
     this.map = map;
   }
 
-  ngOnInit() { 
+  onDrawReady(drawControl?: L.Control.Draw) {
+    // TODO: deixar a linha amarela e não azul
+    // não sei pq ta azul na vdd
+    const polygonDrawer = new L.Draw.Polygon(this.map);
+    polygonDrawer.enable();
+  }
+
+  onDrawStart(event) {
+    // antes do primeiro click é draw start
+    // após o primeiro click é draw cont
+    // ao finalizar é draw end
+    // TODO: adicionar uma msg pra cada ação:
+    // 1 - adicionar o primeiro ponto para iniciar
+    // 2 - clicar no primeiro ponto para finalizar a area
+    // 3 - adicionar mais areas no campo
+    console.log('ON DRAW START: ', this.drawLocal.draw.handlers.polygon.tooltip.start);
+    this.drawMessage = 'Posicione um ponto para demarcar uma área.';
+  }
+
+  ngOnInit() {
     this.loadGeoJson();
     // Objeto de controle das layers
     // baseLayers são as de "baixo", no caso, o mapa satélite; É obrigatória a seleção de ao menos uma.
@@ -143,41 +174,48 @@ export class HomePage {
 
   // Transforma o KML de três pontas em geoJSON e adiciona na layer
   loadGeoJson() {
-    fetch("../../../assets/maps/UsoTresPontas.kml")
+    fetch('../../../assets/maps/areaCafeeiraTresPontas.kml')
     .then(response => {
       return response.text();
     })
     .then(xml => {
-      console.log(kml(new DOMParser().parseFromString(xml, "text/xml")));
-      const result = kml(new DOMParser().parseFromString(xml, "text/xml"));
+      console.log(kml(new DOMParser().parseFromString(xml, 'text/xml')));
+      const result = kml(new DOMParser().parseFromString(xml, 'text/xml'));
       this.kmlMaps.addData(result);
     });
   }
 
   public onDrawCreated(e: any) {
     const { layerType, layer } = e;
-		if (layerType === "polygon") {
-			const polygonCoordinates = layer._latlngs;
-			console.log(polygonCoordinates);
-		}
-		this.drawItems.addLayer(e.layer);
+    if (layerType === 'polygon') {
+      const polygonCoordinates = layer._latlngs;
+      this.drawMessage = 'Você pode adicionar mais áreas.';
+      this.campoList.push(polygonCoordinates);
+
+      console.log('ON DRAW CREATE: Você pode adicionar mais áreas.');
+      console.log(polygonCoordinates);
+    }
+    this.drawItems.addLayer(e.layer);
     // this.drawItems.addLayer((e as L.DrawEvents.Created).layer);
   }
 
+  // TODO: verificar se vale a pena mesmo manter isso daqui
+  // já que as unicas opções de ficaram foi editar poligono e apagar tudo
   setDrawOption() {
     this.drawOptions = {
       position: 'topright',
       draw: {
-        polygon: {
-          allowIntersection: false, // Restricts shapes to simple polygons
-          drawError: {
-            color: '#e1e100', // Color the shape will turn when intersects
-            message: '<strong>Atenção:<strong> você não pode fazer isso!' // Message that will show when intersect
-          },
-          shapeOptions: {
-            color: '#cefc3d'
-          }
-        },
+        // polygon: {
+        //   allowIntersection: false, // Restricts shapes to simple polygons
+        //   drawError: {
+        //     color: '#e1e100', // Color the shape will turn when intersects
+        //     message: '<strong>Atenção:<strong> você não pode fazer isso!' // Message that will show when intersect
+        //   },
+        //   shapeOptions: {
+        //     color: '#cefc3d'
+        //   }
+        // },
+        polygon: false,
         polyline: false,
         circle: false,
         rectangle: false,
@@ -189,4 +227,16 @@ export class HomePage {
       }
     };
   }
+
+  // async presentModal() {
+    // const modal = await this.modalCtrl.create({
+    //   component: CampoModalComponent,
+    //   cssClass: 'very-little-modal',
+    //   componentProps: {
+    //     campoList: this.campoList
+    //   },
+    //   backdropDismiss: false
+    // });
+    // return await modal.present();
+  // }
 }

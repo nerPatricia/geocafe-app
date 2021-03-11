@@ -12,11 +12,9 @@ export class AppHeaderComponent {
   @Input()
   showButtonBack: string = '';
   @Input()
-  showButtonPerfil: boolean = false;
+  drawMessage: string;
   @Input()
-  showButtonLogout: boolean = false;
-  @Input()
-  title: string;
+  drawMode = false;
   @Input()
   iconTitle: string = '';
 
@@ -24,7 +22,7 @@ export class AppHeaderComponent {
   public eventEmitter: EventEmitter<any> = new EventEmitter();
 
   constructor(
-    public navCtrl: NavController, 
+    public navCtrl: NavController,
     private router: Router,
     private authService: AuthService
   ) {}
