@@ -1,7 +1,8 @@
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/service/auth.service';
+import * as L from 'leaflet';
 
 @Component({
   selector: 'app-campo-modal',
@@ -9,14 +10,21 @@ import { AuthService } from 'src/app/service/auth.service';
   styleUrls: ['campo-modal.scss']
 })
 export class CampoModalComponent {
-   @Input() campoList = [];
+  @Input() props: any;
+  nomeCampo = new FormControl(null, [Validators.required]);
 
   constructor(
     public navCtrl: NavController,
     private router: Router,
   ) {}
 
-  goToPerfil() {
-    this.router.navigateByUrl('/user-detail');
+  ionViewDidEnter() {
+    if (this.props.campoList) {
+      this.nomeCampo.setValue('Campo ' + this.props.campoList.length + 1);
+    }
+  }
+
+  add() {
+    console.log(this.props);
   }
 }

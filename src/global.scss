@@ -55,16 +55,25 @@
     background-color: var(--ion-color-tertiary);
 }
 
-// estilo de modal pequeno na parte de baixo da tela
-.very-little-modal .modal-wrapper {
-    height: 16%;
+// estilo de modal que cobra quase a tela inteira
+.default .modal-wrapper {
+    height: 80%;
     margin-top: auto;
 }
 
-// deixa o backdrop do modal transparente
-.sc-ion-modal-md-h:first-of-type {
-    --backdrop-opacity: 0;
+// estilo de modal que fica no centro da tela
+// modal pequeno
+.center-modal .modal-wrapper {
+    height: 25%; // 45%
+    margin: 20px;
+    border-radius: 20px;
+    display: block;
 }
+
+// deixa o backdrop do modal transparente
+// .sc-ion-modal-md-h:first-of-type {
+//     --backdrop-opacity: 0;
+// }
 
 // tira a borda dos input e deixa igual o ion-input
 input {

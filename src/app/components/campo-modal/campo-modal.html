@@ -1,18 +1,18 @@
-<ion-row class="box-modal">
-  <ion-col size="4">
-    <p><b>Selecionado:</b></p>
-    <p><b>{{ campoList.length }}</b> campo{{campoList.length > 1 || campoList.length == 0 ? 's' : ''}}</p>
-  </ion-col>
-  <ion-col size="8" class="box-btn">
-    <button class="btn-act" ion-button expand="block">
-      Cancelar
-    </button>
-    <button class="btn-act" ion-button expand="block">
-      Avançar
+<ion-toolbar>
+  <ion-title class="ion-text-center titulo">Nome do campo selecionado</ion-title>
+</ion-toolbar>
+
+<ion-list lines="none">
+  <ion-item>
+    <ion-input type="text" [formControl]="nomeCampo">
+    </ion-input>
+  </ion-item>
+</ion-list>
+
+<ion-row style="margin-top: 10px;">
+  <ion-col class="ion-text-center">
+    <button class="btn btn-sucess" (click)="add()" ion-button expand="block">
+      Adicionar
     </button>
   </ion-col>
 </ion-row>
-
-<button class="btn" ion-button expand="block">
-  Sair do modo de adição de campo
-</button>

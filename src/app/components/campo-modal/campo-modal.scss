@@ -1,7 +1,38 @@
 * {
   margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
+
+ion-list {
+  padding: 10px;
+
+  ion-item {
+    border: 1px solid rgb(199, 199, 199);
+    border-radius: 10px;
+    height: 40px;
+    margin-bottom: 5px;
+
+    ion-input {
+      --padding-bottom: 20px;
+      text-align: center;
+      --placeholder-font-weight: bolder;
+    }
+  }
+}
+
+.btn-sucess {
+  background-color: var(--ion-color-success-shade);
+  color: white;
+  border-radius: unset;
+  font-weight: bold;
+  font-size: 14px;
+  height: 3.5em;
+}
+
+
+
+// TODO: ver oq q vai usar dessas classes aqui de baixo
 
 .box-modal {
   margin-top: 10px;
@@ -34,14 +65,4 @@ p:nth-child(1) {
 
 .btn-act:nth-child(1) {
   background-color: rgb(182, 181, 181);
-}
-
-.btn {
-  background-color: white;
-  border: 1px solid rgb(230, 230, 230);
-  border-radius: unset;
-  color: var(--ion-color-danger-shade);
-  font-weight: bold;
-  font-size: 14px;
-  height: 3.5em;
 }
