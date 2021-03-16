@@ -1,13 +1,16 @@
 <ion-toolbar>
-  <ion-title class="ion-text-center titulo">Nome do campo selecionado</ion-title>
+  <ion-title class="ion-text-center titulo">Informações sobre o campo</ion-title>
 </ion-toolbar>
 
 <ion-list lines="none">
+  <ion-label>Nome do campo</ion-label>
   <ion-item>
     <ion-input type="text" [formControl]="nomeCampo">
     </ion-input>
   </ion-item>
 </ion-list>
+
+<!-- TODO: antes de salvar os campos, exibir, editar ou excluir campos selecionados -->
 
 <ion-row class="justify">
   <ion-col size="5">

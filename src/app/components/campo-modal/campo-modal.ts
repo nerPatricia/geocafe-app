@@ -12,6 +12,8 @@ import * as L from 'leaflet';
 export class CampoModalComponent {
   @Input() props: any;
   nomeCampo = new FormControl(null, [Validators.required]);
+  // existe o modal do tipo "salvarCampos" que é grande
+  // e o modal "nomeCampoSelecionado" que é centralizado na tela
 
   constructor(
     public navCtrl: NavController,

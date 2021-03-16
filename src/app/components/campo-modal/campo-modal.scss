@@ -7,6 +7,10 @@
 ion-list {
   padding: 10px;
 
+  ion-label {
+    font-weight: bold;
+  }
+
   ion-item {
     border: 1px solid rgb(199, 199, 199);
     border-radius: 10px;

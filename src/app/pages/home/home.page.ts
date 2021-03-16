@@ -16,7 +16,7 @@ export class HomePage {
   map: any;
   viewModeFlag = false;
   drawMessage = 'Posicione um ponto para demarcar uma área.'; // msg no header enquanto o desenho da área é feito
-  campoControl = 0; // 0 - apenas exibição; 1 - seleção de campo; 2 - novo campo (draw)
+  campoControl = 0; // 0 - apenas exibição; 1 - seleção de campo em área que ja existe; 2 - novo campo (draw)
   campoList = []; // lista de áreas de desenho completo
   // Layer base de mapa satélite
   sateliteMap = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
@@ -190,9 +190,7 @@ export class HomePage {
     if (layerType === 'polygon') {
       this.drawMessage = 'Você pode adicionar mais áreas.';
       this.presentModal('center-modal', { type: 'nomeCampoSelecionado', layer, campoList: this.campoList });
-      console.log('ON DRAW CREATE: Você pode adicionar mais áreas.');
     }
-    // this.drawItems.addLayer((e as L.DrawEvents.Created).layer);
   }
 
   // TODO: verificar se vale a pena mesmo manter isso daqui
@@ -224,7 +222,11 @@ export class HomePage {
     };
   }
 
-  next() {}
+  next() {
+    // TODO: antes de salvar os campos, exibir, editar ou excluir campos selecionados
+    // this.presentModal('default', { type: 'salvarCampos', campoList: this.campoList });
+    console.log('envia pro endpoint o array e salva os campos');
+  }
 
   async presentModal(cssClass = 'default', props?: any) {
     const modal = await this.modalCtrl.create({
@@ -248,7 +250,6 @@ export class HomePage {
         }
       }
     });
-
     return await modal.present();
   }
 }
