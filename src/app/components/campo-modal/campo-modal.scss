@@ -21,15 +21,26 @@ ion-list {
   }
 }
 
+.justify {
+  margin-top: 10px;
+  justify-content: space-around;
+
+  ion-col {
+    padding-bottom: 10px;
+  }
+}
+
 .btn-sucess {
   background-color: var(--ion-color-success-shade);
   color: white;
-  border-radius: unset;
   font-weight: bold;
   font-size: 14px;
-  height: 3.5em;
+  height: 3em;
 }
 
+.btn-cancel {
+  background-color: rgb(182, 181, 181) !important;
+}
 
 
 // TODO: ver oq q vai usar dessas classes aqui de baixo

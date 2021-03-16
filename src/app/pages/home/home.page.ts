@@ -188,15 +188,10 @@ export class HomePage {
   public onDrawCreated(e: any) {
     const { layerType, layer } = e;
     if (layerType === 'polygon') {
-      const polygonCoordinates = layer._latlngs;
       this.drawMessage = 'Você pode adicionar mais áreas.';
-      // this.campoList.push(polygonCoordinates);
       this.presentModal('center-modal', { type: 'nomeCampoSelecionado', layer, campoList: this.campoList });
-
       console.log('ON DRAW CREATE: Você pode adicionar mais áreas.');
-      console.log(polygonCoordinates);
     }
-    // this.drawItems.addLayer(e.layer); // isso aqui q adiciona o desenho na layer
     // this.drawItems.addLayer((e as L.DrawEvents.Created).layer);
   }
 
@@ -229,22 +224,31 @@ export class HomePage {
     };
   }
 
-  next() {
-   
-  }
+  next() {}
 
   async presentModal(cssClass = 'default', props?: any) {
     const modal = await this.modalCtrl.create({
       component: CampoModalComponent,
       cssClass,
       componentProps: { props },
-      // componentProps: {
-      //   campoList: this.campoList,
-      //   map: this.map,
-      //   layersControl: this.layersControl
-      // },
       backdropDismiss: false
     });
+
+    modal.onDidDismiss().then((response: any) => {
+      const retorno = response.data || null;
+      if (retorno) {
+        if (retorno.addCampo) {
+          const infoCampo = {
+            coordenadas: props.layer._latlngs[0],
+            nome: retorno.nomeCampo
+          };
+          this.campoList.push(infoCampo);
+          this.drawItems.addLayer(props.layer);
+          console.log(this.campoList);
+        }
+      }
+    });
+
     return await modal.present();
   }
 }
