@@ -6,7 +6,7 @@
 export const environment = {
   production: false,
   // url: 'http://192.168.56.1:3000'
-  url: 'http://localhost:3000',
+  url: 'https://geo-cafe.herokuapp.com/',
 };
 /*
  * For easier debugging in development mode, you can import the following file

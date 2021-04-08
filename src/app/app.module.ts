@@ -9,7 +9,6 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { HttpsRequestInterceptor } from './service/http-request.interceptor';
 import { IonicStorageModule } from '@ionic/storage';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { LeafletDrawModule } from '@asymmetrik/ngx-leaflet-draw';
@@ -20,8 +19,8 @@ import { LeafletDrawModule } from '@asymmetrik/ngx-leaflet-draw';
   imports: [
     BrowserModule,
     HttpClientModule,
-    IonicStorageModule.forRoot(), 
-    IonicModule.forRoot(), 
+    IonicStorageModule.forRoot(),
+    IonicModule.forRoot(),
     AppRoutingModule,
     LeafletModule,
     LeafletDrawModule
@@ -29,12 +28,7 @@ import { LeafletDrawModule } from '@asymmetrik/ngx-leaflet-draw';
   providers: [
     StatusBar,
     SplashScreen,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: HttpsRequestInterceptor,
-      multi: true
-    },
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]
 })

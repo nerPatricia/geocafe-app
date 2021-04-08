@@ -1,10 +1,14 @@
+import { FieldService } from './../../service/field.service';
 import { CampoModalComponent } from '../../components/campo-modal/campo-modal';
 import { AuthService } from 'src/app/service/auth.service';
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import * as L from 'leaflet';
 import { kml } from '@tmcw/togeojson';
 import { LeafletDrawDirective } from '@asymmetrik/ngx-leaflet-draw';
 import { ModalController } from '@ionic/angular';
+import parseGeoRaster from 'georaster';
+import GeoRasterLayer from 'georaster-layer-for-leaflet';
+// import * as geotiff from 'leaflet-geotiff/leaflet-geotiff';
 
 @Component({
   selector: 'app-home',
@@ -12,7 +16,7 @@ import { ModalController } from '@ionic/angular';
   styleUrls: ['home.page.scss'],
 })
 
-export class HomePage {
+export class HomePage implements OnInit {
   map: any;
   viewModeFlag = false;
   drawMessage = 'Posicione um ponto para demarcar uma área.'; // msg no header enquanto o desenho da área é feito
@@ -37,6 +41,7 @@ export class HomePage {
   // Objetos usados pra desenhar os campos e configurar labels
   drawItems: L.FeatureGroup = L.featureGroup();
   drawOptions;
+  // TODO: botar essa variavel em algum outro lugar, ocupa muito espaço
   drawLocal = {
     draw: {
       toolbar: {
@@ -112,10 +117,14 @@ export class HomePage {
   @ViewChild(LeafletDrawDirective)
   leafletDirective: LeafletDrawDirective;
 
-  constructor(private authService: AuthService, private modalCtrl: ModalController) {
-    authService.campoControl.subscribe(data => {
+  constructor(
+    private authService: AuthService,
+    private modalCtrl: ModalController,
+    private fieldService: FieldService
+  ) {
+    this.authService.campoControl.subscribe(data => {
       this.campoControl = data;
-      if (data == 2) {
+      if (data === 2) {
         this.setDrawOption();
       }
     });
@@ -199,16 +208,6 @@ export class HomePage {
     this.drawOptions = {
       position: 'topright',
       draw: {
-        // polygon: {
-        //   allowIntersection: false, // Restricts shapes to simple polygons
-        //   drawError: {
-        //     color: '#e1e100', // Color the shape will turn when intersects
-        //     message: '<strong>Atenção:<strong> você não pode fazer isso!' // Message that will show when intersect
-        //   },
-        //   shapeOptions: {
-        //     color: '#cefc3d'
-        //   }
-        // },
         polygon: false,
         polyline: false,
         circle: false,
@@ -222,10 +221,60 @@ export class HomePage {
     };
   }
 
-  next() {
+  async next() {
+    console.log('SALVA OS CAMPOS E PEGA A IMG .TIF DO RETORNO');
+    console.log(this.campoList);
+    this.fieldService.saveField(this.campoList).then(
+      (res) => {
+        console.log(res);
+      }, error => {
+        console.log(error);
+      }
+    );
     // TODO: antes de salvar os campos, exibir, editar ou excluir campos selecionados
     // this.presentModal('default', { type: 'salvarCampos', campoList: this.campoList });
-    console.log('envia pro endpoint o array e salva os campos');
+
+    // console.log('envia pro endpoint o array e salva os campos');
+
+    // this.fieldService.getFieldById(1).then(response => {
+    //   console.log(response);
+    // }, error => {
+    //   console.log(error);
+    // });
+    // tslint:disable-next-line: max-line-length
+    const url = 'https://landsat-pds.s3.amazonaws.com/c1/L8/045/032/LC08_L1TP_045032_20180811_20180815_01_T1/LC08_L1TP_045032_20180811_20180815_01_T1_B5.TIF';
+
+    const georaster = await parseGeoRaster(url);
+    console.log(georaster);
+
+    // const reader = new FileReader();
+    // reader.readAsArrayBuffer(file);
+    // reader.onloadend = (a) => {
+    //   const arrayBuffer = reader.result;
+    //   console.log(arrayBuffer);
+    //   parseGeoRaster(arrayBuffer).then(georaster => {
+    //     console.log('georaster: ', georaster);
+    //       /*
+    //           GeoRasterLayer is an extension of GridLayer,
+    //           which means can use GridLayer options like opacity.
+    //           Just make sure to include the georaster option!
+    //           http://leafletjs.com/reference-1.2.0.html#gridlayer
+    //       */
+    //     const layer = new GeoRasterLayer({
+    //         georaster,
+    //         opacity: 0.7,
+    //         resolution: 256
+    //     });
+    //     console.log('layer: ', layer);
+    //     layer.addTo(this.map);
+
+    //     this.map.fitBounds(layer.getBounds());
+    //     document.getElementById('overlay').style.display = 'none';
+    //   });
+    // };
+    // console.log(file);
+
+    // this.layersControl.overlays = { ... this.layersControl.overlays, newLayer };
   }
 
   async presentModal(cssClass = 'default', props?: any) {
@@ -241,12 +290,12 @@ export class HomePage {
       if (retorno) {
         if (retorno.addCampo) {
           const infoCampo = {
-            coordenadas: props.layer._latlngs[0],
-            nome: retorno.nomeCampo
+            coordinates: props.layer._latlngs[0],
+            name: retorno.nomeCampo,
+            user_id: '0'
           };
           this.campoList.push(infoCampo);
           this.drawItems.addLayer(props.layer);
-          console.log(this.campoList);
         }
       }
     });

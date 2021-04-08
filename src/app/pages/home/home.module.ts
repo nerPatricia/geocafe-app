@@ -1,3 +1,4 @@
+import { FieldService } from './../../service/field.service';
 import { CampoModalModule } from '../../components/campo-modal/campo-modal.module';
 import { LoadingService } from './../../service/loading.service';
 import { NgModule } from '@angular/core';
@@ -29,6 +30,6 @@ const routes: Routes = [
     CampoModalModule
   ],
   declarations: [HomePage],
-  providers: [LoadingService]
+  providers: [LoadingService, FieldService]
 })
 export class HomePageModule {}

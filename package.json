@@ -11,8 +11,14 @@
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false
+  },
   "private": true,
   "dependencies": {
+    "@angular/animations": "^11.2.7",
     "@angular/common": "~11.2.0",
     "@angular/core": "~11.2.0",
     "@angular/forms": "~11.2.0",
@@ -37,11 +43,18 @@
     "cordova-plugin-camera": "^5.0.1",
     "cordova-plugin-geolocation": "^4.1.0",
     "cordova-plugin-nativegeocoder": "^3.4.1",
+    "georaster": "^1.5.1",
+    "georaster-layer-for-leaflet": "^1.0.0",
+    "geotiff": "^1.0.2",
     "leaflet": "^1.6.0",
     "leaflet-ant-path": "^1.3.0",
     "leaflet-draw": "^1.0.4",
+    "leaflet-geotiff": "^0.2.0",
+    "leaflet-geotiff-2": "git+https://github.com/danwild/leaflet-geotiff-2.git",
     "leaflet-image": "^0.4.0",
+    "proj4": "^2.7.2",
     "rxjs": "~6.6.3",
+    "stream": "0.0.2",
     "sweetalert2": "^10.15.0",
     "tslib": "^2.1.0",
     "zone.js": "~0.11.3"
@@ -57,7 +70,7 @@
     "@types/jasminewd2": "~2.0.8",
     "@types/leaflet": "^1.5.23",
     "@types/leaflet-draw": "^1.0.3",
-    "@types/node": "^14.14.28",
+    "@types/node": "^14.14.37",
     "codelyzer": "^6.0.1",
     "cordova-plugin-device": "^2.0.3",
     "cordova-plugin-ionic-keyboard": "^2.2.0",
