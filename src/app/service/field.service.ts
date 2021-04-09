@@ -21,4 +21,10 @@ export class FieldService {
     const url = this.url + 'field/' + fieldId;
     return this.http.get(url).toPromise();
   }
+
+  getFieldTiff(fieldId) {
+    fieldId = '606d1823bbf87d520d62e21a';
+    const url = this.url + 'field/cut/' + fieldId;
+    return this.http.get(url).toPromise();
+  }
 }
