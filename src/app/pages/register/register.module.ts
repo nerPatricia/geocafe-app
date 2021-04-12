@@ -27,7 +27,7 @@ const routes: Routes = [
     AppHeaderModule,
     RouterModule.forChild(routes)
   ],
-  providers: [LoadingService],
+  providers: [LoadingService, AuthService],
   declarations: [RegisterPage]
 })
 export class RegisterPageModule {}

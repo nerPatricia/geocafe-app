@@ -242,10 +242,10 @@ export class HomePage implements OnInit {
               const scale = Chroma.scale('Viridis');
               const layer = new GeoRasterLayer({
                   georaster,
-                  opacity: 1,
+                  opacity: 0.9,
                   pixelValuesToColorFn: pixelValues => {
                     const pixelValue = pixelValues[0]; // there's just one band in this raster
-                    // if there's zero wind, don't return a color
+                    // if there's zero value, don't return a color
                     if (pixelValue === 0) { return null; }
                     // scale to 0 - 1 used by chroma
                     const scaledPixelValue = (pixelValue - min) / range;
@@ -266,11 +266,6 @@ export class HomePage implements OnInit {
     );
 
     // TODO: antes de salvar os campos, exibir, editar ou excluir campos selecionados
-    // tslint:disable-next-line: max-line-length
-    // const url = 'https://landsat-pds.s3.amazonaws.com/c1/L8/045/032/LC08_L1TP_045032_20180811_20180815_01_T1/LC08_L1TP_045032_20180811_20180815_01_T1_B5.TIF';
-
-    // const georaster = await parseGeoRaster(url);
-    // console.log(georaster);
   }
 
   async presentModal(cssClass = 'default', props?: any) {

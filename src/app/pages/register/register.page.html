@@ -2,84 +2,36 @@
 
 <ion-content class="ion-padding">
   <ion-grid>
-    <ion-list class="form">
-      <form [formGroup]="form">
-        <ion-label>Informações Pessoais</ion-label>
-        <ion-item style="margin-top: 10px">
-          <ion-input type="text" placeholder="Nome*" formControlName="name"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-input type="text" placeholder="Data de nascimento" formControlName="birthday"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-input type="tel" placeholder="CPF" formControlName="cpf"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-input type="text" placeholder="E-mail*" formControlName="email"></ion-input>
-        </ion-item>
-        <ion-item style="margin-bottom: 10px;">
-          <ion-input type="password" placeholder="Senha*" formControlName="password"></ion-input>
-        </ion-item>
+    <div class="title">
+      <h1>Preencha as informações a seguir para se cadastrar</h1>
+    </div>
 
-        <ion-label>Endereço</ion-label>
-        <ion-item style="margin-top: 10px;">
-          <ion-input type="text" placeholder="Rua*" formControlName="address"></ion-input>
-        </ion-item>
-        <ion-row style="margin-bottom: 10px;">
-          <ion-col size="6">
-            <ion-item>
-              <ion-input type="tel" placeholder="Número" formControlName="number"></ion-input>
-            </ion-item>
-          </ion-col>
-          <ion-col size="6">
-            <ion-item>
-              <ion-input type="text" placeholder="Complemento" formControlName="complement"></ion-input>
-            </ion-item>
-          </ion-col>
-          <ion-col size="6">
-            <ion-item>
-              <ion-input type="text" placeholder="Cidade*" formControlName="city"></ion-input>
-            </ion-item>
-          </ion-col>
-          <ion-col size="6">
-            <ion-item>
-              <ion-input type="tel" placeholder="CEP" formControlName="zip"></ion-input>
-            </ion-item>
-          </ion-col>
-        </ion-row>
+    <ion-list class="form" [formGroup]="form">
+      <ion-item>
+        <ion-input type="text" placeholder="E-mail*" formControlName="email"></ion-input>
+      </ion-item>
+      <p [hidden]="!isInvalid('email')" class="error-message ion-text-center">
+        {{ getErrorMessage('email') }}
+      </p>
 
-        <ion-label>Escolaridade</ion-label>
-        <ion-item style="margin-top: 10px;">
-          <ion-input type="text" placeholder="Instituição*" formControlName="school"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-input type="text" placeholder="Curso*" formControlName="course"></ion-input>
-        </ion-item>
-        <ion-row>
-          <ion-col size="6">
-            <ion-item>
-              <ion-input type="text" placeholder="Matricula*" formControlName="schoolCode"></ion-input>
-            </ion-item>
-          </ion-col>
-          <ion-col size="6">
-            <ion-item>
-              <ion-input type="tel" placeholder="Semestre*" formControlName="semester"></ion-input>
-            </ion-item>
-          </ion-col>
-        </ion-row>
+      <ion-item>
+        <ion-input type="password" placeholder="Senha*" formControlName="password"></ion-input>
+      </ion-item>
+      <p [hidden]="!isInvalid('password')" class="error-message ion-text-center">
+        {{ getErrorMessage('password') }}
+      </p>
 
-        <ion-item>
-          <ion-label
-            style="font-size: 12px !important; padding-bottom: 13px !important; padding-left: 20px !important;">Sou
-            organizador</ion-label>
-          <ion-checkbox formControlName="teacher" style="margin-top: 6px; margin-right: 20px;"></ion-checkbox>
-        </ion-item>
-      </form>
+      <ion-item>
+        <ion-input type="password" placeholder="Confirme a Senha*" formControlName="confirmPassword"></ion-input>
+      </ion-item>
+      <p [hidden]="!isInvalid('confirmPassword')" class="error-message ion-text-center">
+        {{ getErrorMessage('confirmPassword') }}
+      </p>
     </ion-list>
 
-    <p [hidden]="form.valid" class="error-message ion-text-center">
+    <!-- <p [hidden]="form.valid" class="error-message ion-text-center">
       Preencha os campos obrigatórios para prosseguir
-    </p>
+    </p> -->
 
     <ion-row class="bottom-buttons">
       <ion-col size="5">

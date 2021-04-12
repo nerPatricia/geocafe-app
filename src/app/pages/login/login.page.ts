@@ -9,7 +9,7 @@ import { AuthService } from 'src/app/service/auth.service';
 })
 export class LoginPage implements OnInit {
   userData: any = {
-   email: 'teste@teste',
+   email: 'patricia@mail.com',
    password: '123456'
   };
   showPassword: boolean = false;
@@ -23,18 +23,14 @@ export class LoginPage implements OnInit {
   }
 
   login() {
-    this.router.navigateByUrl('/home');
-    // this.authService.login(this.userData.email, this.userData.password).subscribe(
-    //  async (response: any) => {
-    //     await this.authService.saveAuth(response);
-    //     if (response.teacher === true) {
-    //       this.router.navigateByUrl('/home-organizer');
-    //     } else {
-    //       this.router.navigateByUrl('/home');
-    //     }
-    //   }, error => {
-    //     console.log(error);
-    //   }
-    // )
+    // this.router.navigateByUrl('/home');
+    this.authService.login(this.userData.email, this.userData.password).subscribe(
+     async (response: any) => {
+        // await this.authService.saveAuth(response);
+        this.router.navigateByUrl('/home');
+      }, error => {
+        console.log(error);
+      }
+    )
   }
 }

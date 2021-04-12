@@ -16,8 +16,8 @@
   <ion-row *ngIf="campoControl > 0" style="height: 12%; background-color: white;">
     <ion-row class="box-modal">
       <ion-col size="4" class="alinha">
-        <p><b>Selecionado:</b></p>
-        <p><b>{{ campoList.length }}</b> campo{{campoList.length > 1 || campoList.length == 0 ? 's' : ''}}</p>
+        <p><strong>Selecionado:</strong></p>
+        <p><strong>{{ campoList.length }}</strong> campo{{campoList.length > 1 || campoList.length == 0 ? 's' : ''}}</p>
       </ion-col>
       <ion-col size="8" class="box-btn">
         <button class="btn-act" (click)="onDrawReady()" ion-button expand="block">

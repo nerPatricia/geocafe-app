@@ -45,6 +45,14 @@
     --highlight-background: none !important;
 }
 
+// msg de erro padrão
+.error-message {
+    font-weight: bold;
+    color: #b94a48;
+    font-size: 10px;
+    padding-bottom: 5px !important;
+}
+
 // layout do botão padrão
 .btn {
     border-radius: 5px;

@@ -1,3 +1,4 @@
+import { environment } from './../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
@@ -14,15 +15,17 @@ export class AuthService {
 
   public token;
 
+  url = environment.url;
+
   constructor(public http: HttpClient, private storage: Storage) { }
 
-  login(email, password) {
-    const url = '/login';
-    return this.http.post(url, { email, password });
+  login(username, password) {
+    const url = this.url + 'user/login';
+    return this.http.post(url, { username, password });
   }
 
   register(registerData): Observable<any> {
-    const url = '/user';
+    const url = this.url + 'user';
     return this.http.post(url, registerData);
   }
 

@@ -13,28 +13,8 @@ import { LoadingService } from 'src/app/service/loading.service';
 export class RegisterPage implements OnInit {
   form: FormGroup;
 
-  // registerData: any = {
-  //   name: '',
-  //   email: '',
-  //   password: '',
-  //   cpf: '',
-  //   birthday: '',
-  //   address: '',
-  //   number: '',
-  //   complement: '',
-  //   city: '',
-  //   zip: '',
-  //   school: '',
-  //   course: '',
-  //   schoolCode: '',
-  //   semester: '',
-  //   teacher: false,
-  //   events: [],
-  //   hours: 0
-  // };
-
   constructor(
-    private router: Router, 
+    private router: Router,
     private formBuilder: FormBuilder,
     private authService: AuthService,
     private loading: LoadingService
@@ -42,24 +22,56 @@ export class RegisterPage implements OnInit {
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      name: new FormControl('', [Validators.required]),
-      email: new FormControl('', [Validators.required]),
+      email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required]),
-      cpf: new FormControl(''),
-      birthday: new FormControl(''),
-      address: new FormControl('', [Validators.required]),
-      number: new FormControl(''),
-      complement: new FormControl(''),
-      city: new FormControl('', [Validators.required]),
-      zip: new FormControl(''),
-      school: new FormControl('', [Validators.required]),
-      course: new FormControl('', [Validators.required]),
-      schoolCode: new FormControl('', [Validators.required]),
-      semester: new FormControl('', [Validators.required]),
-      teacher: new FormControl(false),
-      events: new FormControl([]),
-      hours: new FormControl(0)
+      confirmPassword: new FormControl(''),
+    },
+    {
+      validator: this.checkIfMatchingPasswords('password', 'confirmPassword')
     });
+  }
+
+  checkIfMatchingPasswords(password: string, confirmPassword: string) {
+    return (group: FormGroup) => {
+      const passInput = group.controls[password],
+      passCheckInput = group.controls[confirmPassword];
+      if (passInput.value !== passCheckInput.value) {
+        return passCheckInput.setErrors({ notEquivalent: true });
+      } else if (passCheckInput.value === '' || passCheckInput.value == null) {
+        return passCheckInput.setErrors({ required: true });
+      } else {
+        return passCheckInput.setErrors(null);
+      }
+    };
+  }
+
+  getErrorMessage(field) {
+    return this.form.get(field).hasError('required')
+      ? 'Campo requerido'
+      : this.form.get(field).hasError('email')
+      ? 'Email inválido'
+      : this.form.get(field).hasError('minlength')
+      ? 'A senha deve ter no mínimo 8 caracteres.'
+      : this.form.get(field).hasError('notEquivalent')
+      ? 'Senhas não coincidem'
+      : '';
+  }
+
+  isValid(field) {
+    if (
+      this.form.get(field).value === '' ||
+      this.form.get(field).value === null
+    ) {
+      return false;
+    }
+    return this.form.get(field).valid;
+  }
+
+  isInvalid(field) {
+    return (
+      !this.form.controls[field].valid &&
+      (this.form.controls[field].touched)
+    );
   }
 
   back() {
@@ -67,7 +79,10 @@ export class RegisterPage implements OnInit {
   }
 
   register() {
-    this.authService.register(this.form.value).subscribe(
+    const obj = this.form.value;
+    delete obj.confirmPassword;
+    console.log(obj);
+    this.authService.register(obj).subscribe(
       (response) => {
         Swal.fire({
           title: 'Sucesso',
