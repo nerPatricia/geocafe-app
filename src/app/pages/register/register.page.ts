@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/service/auth.service';
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
 import { LoadingService } from 'src/app/service/loading.service';
 
 @Component({
@@ -12,6 +12,8 @@ import { LoadingService } from 'src/app/service/loading.service';
 })
 export class RegisterPage implements OnInit {
   form: FormGroup;
+  showPassword = false;
+  showConfirmPassword = false;
 
   constructor(
     private router: Router,
@@ -33,8 +35,8 @@ export class RegisterPage implements OnInit {
 
   checkIfMatchingPasswords(password: string, confirmPassword: string) {
     return (group: FormGroup) => {
-      const passInput = group.controls[password],
-      passCheckInput = group.controls[confirmPassword];
+      const passInput = group.controls[password];
+      const passCheckInput = group.controls[confirmPassword];
       if (passInput.value !== passCheckInput.value) {
         return passCheckInput.setErrors({ notEquivalent: true });
       } else if (passCheckInput.value === '' || passCheckInput.value == null) {
@@ -82,19 +84,19 @@ export class RegisterPage implements OnInit {
     const obj = this.form.value;
     delete obj.confirmPassword;
     console.log(obj);
-    this.authService.register(obj).subscribe(
-      (response) => {
-        Swal.fire({
-          title: 'Sucesso',
-          text: 'Usuário cadastrado com sucesso. Faça login para continuar',
-          icon: 'success',
-          confirmButtonText: 'OK'
-        }).then(() => {
-          this.router.navigateByUrl('/');
-        });
-      }, error => {
-        console.log(error);
-      }
-    );
+    // this.authService.register(obj).subscribe(
+    //   (response) => {
+    //     Swal.fire({
+    //       title: 'Sucesso',
+    //       text: 'Usuário cadastrado com sucesso. Faça login para continuar',
+    //       icon: 'success',
+    //       confirmButtonText: 'OK'
+    //     }).then(() => {
+    //       this.router.navigateByUrl('/');
+    //     });
+    //   }, error => {
+    //     console.log(error);
+    //   }
+    // );
   }
 }

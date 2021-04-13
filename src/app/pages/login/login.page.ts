@@ -1,6 +1,8 @@
+import { LoadingService } from './../../service/loading.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/service/auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -12,9 +14,13 @@ export class LoginPage implements OnInit {
    email: 'patricia@mail.com',
    password: '123456'
   };
-  showPassword: boolean = false;
+  showPassword = false;
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private loading: LoadingService
+  ) {}
 
   ngOnInit() {}
 
@@ -23,14 +29,18 @@ export class LoginPage implements OnInit {
   }
 
   login() {
-    // this.router.navigateByUrl('/home');
-    this.authService.login(this.userData.email, this.userData.password).subscribe(
-     async (response: any) => {
+    if (this.userData.email === '' || this.userData.password === '') {
+      return;
+    }
+
+    this.loading.present();
+    this.authService.login(this.userData.email, this.userData.password).finally(() => this.loading.dismiss()).then(
+      (response: any) => {
         // await this.authService.saveAuth(response);
         this.router.navigateByUrl('/home');
       }, error => {
-        console.log(error);
+        Swal.fire('Erro', 'Usuário e/ou senha inválidos', 'error');
       }
-    )
+    );
   }
 }

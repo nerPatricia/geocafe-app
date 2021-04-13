@@ -6,32 +6,37 @@
       <h1>Preencha as informações a seguir para se cadastrar</h1>
     </div>
 
-    <ion-list class="form" [formGroup]="form">
-      <ion-item>
-        <ion-input type="text" placeholder="E-mail*" formControlName="email"></ion-input>
-      </ion-item>
-      <p [hidden]="!isInvalid('email')" class="error-message ion-text-center">
-        {{ getErrorMessage('email') }}
-      </p>
+    <ion-list class="form">
+      <form [formGroup]="form">
+        <ion-item>
+          <ion-input type="text" placeholder="E-mail*" formControlName="email"></ion-input>
+        </ion-item>
+        <p [hidden]="!isInvalid('email')" class="error-message ion-text-center">
+          {{ getErrorMessage('email') }}
+        </p>
 
-      <ion-item>
-        <ion-input type="password" placeholder="Senha*" formControlName="password"></ion-input>
-      </ion-item>
-      <p [hidden]="!isInvalid('password')" class="error-message ion-text-center">
-        {{ getErrorMessage('password') }}
-      </p>
+        <ion-item>
+          <ion-input [type]="showPassword ? 'text' : 'password'" placeholder="Senha*" formControlName="password">
+          </ion-input>
+          <ion-icon (click)="showPassword = !showPassword" [name]="showPassword ? 'eye-off' : 'eye'">
+          </ion-icon>
+        </ion-item>
+        <p [hidden]="!isInvalid('password')" class="error-message ion-text-center">
+          {{ getErrorMessage('password') }}
+        </p>
 
-      <ion-item>
-        <ion-input type="password" placeholder="Confirme a Senha*" formControlName="confirmPassword"></ion-input>
-      </ion-item>
-      <p [hidden]="!isInvalid('confirmPassword')" class="error-message ion-text-center">
-        {{ getErrorMessage('confirmPassword') }}
-      </p>
+        <ion-item>
+          <ion-input [type]="showConfirmPassword ? 'text' : 'password'" placeholder="Confirme a Senha*"
+            formControlName="confirmPassword"></ion-input>
+          <ion-icon (click)="showConfirmPassword = !showConfirmPassword"
+            [name]="showConfirmPassword ? 'eye-off' : 'eye'">
+          </ion-icon>
+        </ion-item>
+        <p [hidden]="!isInvalid('confirmPassword')" class="error-message ion-text-center">
+          {{ getErrorMessage('confirmPassword') }}
+        </p>
+      </form>
     </ion-list>
-
-    <!-- <p [hidden]="form.valid" class="error-message ion-text-center">
-      Preencha os campos obrigatórios para prosseguir
-    </p> -->
 
     <ion-row class="bottom-buttons">
       <ion-col size="5">

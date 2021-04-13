@@ -1,3 +1,4 @@
+import { LoadingService } from './../../service/loading.service';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -7,7 +8,6 @@ import { IonicModule } from '@ionic/angular';
 
 import { LoginPage } from './login.page';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { Storage } from '@ionic/storage';
 
 const routes: Routes = [
   {
@@ -23,7 +23,7 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  providers: [JwtHelperService],
+  providers: [JwtHelperService, LoadingService],
   declarations: [LoginPage]
 })
 export class LoginPageModule {}

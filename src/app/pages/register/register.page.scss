@@ -24,11 +24,14 @@ ion-grid {
     }
 
     ion-item {
-        margin-left: 0;
+        border: solid 2px #a8a9af;
+        border-radius: 10px;
         margin-bottom: 10px;
+        height: 40px;
 
         ion-icon {
-            padding-bottom: 7px;
+            padding-bottom: 8px;
+            color: #a5a7ad;
         }
     }
 
@@ -44,7 +47,7 @@ ion-grid {
 h1 {
     font-size: 18px;
     // font-family: 'Bold';
-    margin-bottom: 0em;
+    margin-bottom: 1em;
 }
 
 .bottom-buttons {

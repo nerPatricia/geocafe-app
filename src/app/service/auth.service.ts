@@ -21,7 +21,7 @@ export class AuthService {
 
   login(username, password) {
     const url = this.url + 'user/login';
-    return this.http.post(url, { username, password });
+    return this.http.post(url, { username, password }).toPromise();
   }
 
   register(registerData): Observable<any> {
