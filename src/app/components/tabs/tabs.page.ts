@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { AuthService } from 'src/app/service/auth.service';
 import { Component, ViewChild } from '@angular/core';
 import { ActionSheetController, IonTabs } from '@ionic/angular';
@@ -11,7 +12,11 @@ export class TabsPage {
   @ViewChild('tabs') tabRef: IonTabs;
   campoControl = 0; // 0 - apenas exibição; 1 - seleção de campo; 2 - novo campo (draw)
 
-  constructor(private actionSheetCtrl: ActionSheetController, private authService: AuthService) {}
+  constructor(
+    private actionSheetCtrl: ActionSheetController,
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   ionViewDidLoad() {
     console.log(this.tabRef);
@@ -49,8 +54,12 @@ export class TabsPage {
   closeAddCampo() {
     this.authService.campoControl.next(0);
     this.campoControl = 0;
-    // TODO: quando fechar a adição de campo, 
+    // TODO: quando fechar a adição de campo,
     // se não salvou o campo, apagar desenho do mapa
+  }
+
+  logout() {
+    this.router.navigateByUrl('/');
   }
 
 }

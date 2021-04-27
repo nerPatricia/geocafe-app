@@ -1,3 +1,4 @@
+import { LoadingService } from './../../service/loading.service';
 import { environment } from './../../../environments/environment';
 import { FieldService } from './../../service/field.service';
 import { CampoModalComponent } from '../../components/campo-modal/campo-modal';
@@ -10,14 +11,12 @@ import { ModalController } from '@ionic/angular';
 import parseGeoRaster from 'georaster';
 import GeoRasterLayer from 'georaster-layer-for-leaflet';
 import Chroma from 'chroma-js';
-// import * as geotiff from 'leaflet-geotiff/leaflet-geotiff';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-
 export class HomePage implements OnInit {
   url = environment.url;
   map: any;
@@ -26,20 +25,23 @@ export class HomePage implements OnInit {
   campoControl = 0; // 0 - apenas exibição; 1 - seleção de campo em área que ja existe; 2 - novo campo (draw)
   campoList = []; // lista de áreas de desenho completo
   // Layer base de mapa satélite
-  sateliteMap = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-    detectRetina: true,
-    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-    attribution: '.....'
-  });
+  sateliteMap = L.tileLayer(
+    'https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+    {
+      detectRetina: true,
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+      attribution: '.....',
+    }
+  );
   // Layer de dados geoJSON iniciada vazia
   kmlMaps = L.geoJSON(null, {});
   layersControl;
   // Objeto das opções iniciais do mapa
   // pode ser utilizado tbm como bind no input leafletLayers
   options = {
-    layers: [ this.sateliteMap ],
+    layers: [this.sateliteMap],
     zoom: 14,
-    center: L.latLng([ -21.3726284, -45.5167047 ])
+    center: L.latLng([-21.3726284, -45.5167047]),
   };
   // Objetos usados pra desenhar os campos e configurar labels
   drawItems: L.FeatureGroup = L.featureGroup();
@@ -50,72 +52,71 @@ export class HomePage implements OnInit {
       toolbar: {
         actions: {
           title: 'Cancelar desenho',
-          text: 'Cancelar'
+          text: 'Cancelar',
         },
         finish: {
           title: 'Finalizar desenho',
-          text: 'Finalizar'
+          text: 'Finalizar',
         },
         undo: {
           title: 'Apagar último ponto desenhado',
-          text: 'Apagar último ponto'
+          text: 'Apagar último ponto',
         },
         buttons: {
           polygon: 'Desenhe um poligono',
-        }
+        },
       },
       handlers: {
         polygon: {
           tooltip: {
             start: 'Posicione o primeiro ponto da área.',
             cont: 'Posicione um ponto para continuar a demarcar uma área.',
-            end: 'Toque no primeiro ponto para finalizar a área.'
-          }
+            end: 'Toque no primeiro ponto para finalizar a área.',
+          },
         },
         polyline: {
-          error: '<strong>Atenção:<strong> você não pode fazer isso!'
-        }
-      }
+          error: '<strong>Atenção:<strong> você não pode fazer isso!',
+        },
+      },
     },
     edit: {
       toolbar: {
         actions: {
-            save: {
-                title: 'Salvar mudanças',
-                text: 'Salvar'
-            },
-            cancel: {
-                title: 'Cancelar edição, descarta todas as mudanças.',
-                text: 'Cancelar'
-            },
-            clearAll: {
-                title: 'Apaga todas as layers.',
-                text: 'Apagar tudo'
-            }
+          save: {
+            title: 'Salvar mudanças',
+            text: 'Salvar',
+          },
+          cancel: {
+            title: 'Cancelar edição, descarta todas as mudanças.',
+            text: 'Cancelar',
+          },
+          clearAll: {
+            title: 'Apaga todas as layers.',
+            text: 'Apagar tudo',
+          },
         },
         buttons: {
-            edit: 'Editar áreas',
-            editDisabled: 'Sem áreas para editar',
-            remove: 'Apagar áreas',
-            removeDisabled: 'Sem áreas para apagar'
-        }
+          edit: 'Editar áreas',
+          editDisabled: 'Sem áreas para editar',
+          remove: 'Apagar áreas',
+          removeDisabled: 'Sem áreas para apagar',
+        },
       },
       handlers: {
         edit: {
           tooltip: {
-              text: 'Arraste as arestas ou marcadores para editar uma área.',
-              subtext: 'Clique em cancelar para desfazer as mudanças.'
-          }
+            text: 'Arraste as arestas ou marcadores para editar uma área.',
+            subtext: 'Clique em cancelar para desfazer as mudanças.',
+          },
         },
         remove: {
-            tooltip: {
-                text: 'Clique em uma área para remover.'
-            }
-        }
-      }
-    }
+          tooltip: {
+            text: 'Clique em uma área para remover.',
+          },
+        },
+      },
+    },
   };
-
 
   @ViewChild(LeafletDrawDirective)
   leafletDirective: LeafletDrawDirective;
@@ -123,9 +124,10 @@ export class HomePage implements OnInit {
   constructor(
     private authService: AuthService,
     private modalCtrl: ModalController,
-    private fieldService: FieldService
+    private fieldService: FieldService,
+    private loading: LoadingService
   ) {
-    this.authService.campoControl.subscribe(data => {
+    this.authService.campoControl.subscribe((data) => {
       this.campoControl = data;
       if (data === 2) {
         this.setDrawOption();
@@ -160,7 +162,10 @@ export class HomePage implements OnInit {
     // 1 - adicionar o primeiro ponto para iniciar
     // 2 - clicar no primeiro ponto para finalizar a area
     // 3 - adicionar mais areas no campo
-    console.log('ON DRAW START: ', this.drawLocal.draw.handlers.polygon.tooltip.start);
+    console.log(
+      'ON DRAW START: ',
+      this.drawLocal.draw.handlers.polygon.tooltip.start
+    );
     this.drawMessage = 'Posicione um ponto para demarcar uma área.';
   }
 
@@ -175,33 +180,37 @@ export class HomePage implements OnInit {
       },
       overlays: {
         'KML Maps': this.kmlMaps,
-      }
+      },
     };
   }
 
   ionViewDidEnter() {
-    this.viewModeFlag =  true;
+    this.viewModeFlag = true;
     this.invalidateSize();
   }
 
   // Transforma o KML de três pontas em geoJSON e adiciona na layer
   loadGeoJson() {
     fetch('../../../assets/maps/areaCafeeiraTresPontas.kml')
-    .then(response => {
-      return response.text();
-    })
-    .then(xml => {
-      console.log(kml(new DOMParser().parseFromString(xml, 'text/xml')));
-      const result = kml(new DOMParser().parseFromString(xml, 'text/xml'));
-      this.kmlMaps.addData(result);
-    });
+      .then((response) => {
+        return response.text();
+      })
+      .then((xml) => {
+        console.log(kml(new DOMParser().parseFromString(xml, 'text/xml')));
+        const result = kml(new DOMParser().parseFromString(xml, 'text/xml'));
+        this.kmlMaps.addData(result);
+      });
   }
 
   public onDrawCreated(e: any) {
     const { layerType, layer } = e;
     if (layerType === 'polygon') {
       this.drawMessage = 'Você pode adicionar mais áreas.';
-      this.presentModal('center-modal', { type: 'nomeCampoSelecionado', layer, campoList: this.campoList });
+      this.presentModal('center-modal', {
+        type: 'nomeCampoSelecionado',
+        layer,
+        campoList: this.campoList,
+      });
     }
   }
 
@@ -216,51 +225,61 @@ export class HomePage implements OnInit {
         circle: false,
         rectangle: false,
         marker: false,
-        circlemarker: false
+        circlemarker: false,
       },
       edit: {
-        featureGroup: this.drawItems
-      }
+        featureGroup: this.drawItems,
+      },
     };
   }
 
-  async next() {
-    console.log('SALVA OS CAMPOS E PEGA O ID DA IMG NO RETORNO');
+  async save() {
     console.log(this.campoList);
+
+    if (this.campoList.length === 0) {
+      return;
+    }
+
     this.fieldService.saveField(this.campoList).then(
       (res: any) => {
         console.log(res);
         fetch(`${this.url}field/cut/${res.data[0].id}`)
-          .then(response => response.arrayBuffer())
-          .then(arrayBuffer => {
-            console.log('arrayBuffer:', arrayBuffer);
-            parseGeoRaster(arrayBuffer).then(georaster => {
-              console.log('georaster: ', georaster);
+          .then((response) => response.arrayBuffer())
+          .then((arrayBuffer) => {
+            parseGeoRaster(arrayBuffer).then((georaster) => {
+              console.log(georaster);
               const min = georaster.mins[0];
               const range = georaster.ranges[0];
               // console.log(Chroma.brewer);
               const scale = Chroma.scale('Viridis');
-              const layer = new GeoRasterLayer({
-                  georaster,
-                  opacity: 0.9,
-                  pixelValuesToColorFn: pixelValues => {
-                    const pixelValue = pixelValues[0]; // there's just one band in this raster
-                    // if there's zero value, don't return a color
-                    if (pixelValue === 0) { return null; }
-                    // scale to 0 - 1 used by chroma
-                    const scaledPixelValue = (pixelValue - min) / range;
-                    const color = scale(scaledPixelValue).hex();
-                    return color;
-                  },
-                  resolution: 256 // optional parameter for adjusting display resolution
+              const newLayer = new GeoRasterLayer({
+                georaster,
+                opacity: 0.9,
+                pixelValuesToColorFn: (pixelValues) => {
+                  const pixelValue = pixelValues[0]; // there's just one band in this raster
+                  // if there's zero value, don't return a color
+                  if (pixelValue === 0) {
+                    return null;
+                  }
+                  // scale to 0 - 1 used by chroma
+                  const scaledPixelValue = (pixelValue - min) / range;
+                  const color = scale(scaledPixelValue).hex();
+                  return color;
+                },
+                resolution: 256, // optional parameter for adjusting display resolution
               });
-              layer.addTo(this.map);
+              this.layersControl.overlays = {
+                ...this.layersControl.overlays,
+                campos: newLayer,
+              };
+              this.map.addLayer(this.layersControl.overlays.campos);
+              // console.log(this.layersControl.overlays.campos);
 
-              this.map.fitBounds(layer.getBounds());
+              this.map.fitBounds(newLayer.getBounds());
             });
-            // this.layersControl.overlays = { ... this.layersControl.overlays, newLayer };
-        });
-      }, error => {
+          });
+      },
+      (error) => {
         console.log(error);
       }
     );
@@ -273,7 +292,7 @@ export class HomePage implements OnInit {
       component: CampoModalComponent,
       cssClass,
       componentProps: { props },
-      backdropDismiss: false
+      backdropDismiss: false,
     });
 
     modal.onDidDismiss().then((response: any) => {
@@ -283,7 +302,7 @@ export class HomePage implements OnInit {
           const infoCampo = {
             coordinates: props.layer._latlngs[0],
             name: retorno.nomeCampo,
-            user_id: '0'
+            user_id: '0',
           };
           this.campoList.push(infoCampo);
           this.drawItems.addLayer(props.layer);

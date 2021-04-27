@@ -24,9 +24,9 @@ export class AuthService {
     return this.http.post(url, { username, password }).toPromise();
   }
 
-  register(registerData): Observable<any> {
+  register(registerData){
     const url = this.url + 'user';
-    return this.http.post(url, registerData);
+    return this.http.post(url, registerData).toPromise();
   }
 
   async saveAuth(authData) {

@@ -81,22 +81,23 @@ export class RegisterPage implements OnInit {
   }
 
   register() {
+    this.loading.present();
     const obj = this.form.value;
     delete obj.confirmPassword;
-    console.log(obj);
-    // this.authService.register(obj).subscribe(
-    //   (response) => {
-    //     Swal.fire({
-    //       title: 'Sucesso',
-    //       text: 'Usuário cadastrado com sucesso. Faça login para continuar',
-    //       icon: 'success',
-    //       confirmButtonText: 'OK'
-    //     }).then(() => {
-    //       this.router.navigateByUrl('/');
-    //     });
-    //   }, error => {
-    //     console.log(error);
-    //   }
-    // );
+
+    this.authService.register(obj).finally(() => this.loading.dismiss()).then(
+      (response) => {
+        Swal.fire({
+          title: 'Sucesso',
+          text: 'Usuário cadastrado com sucesso. Faça login para continuar',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        }).then(() => {
+          this.router.navigateByUrl('/');
+        });
+      }, error => {
+        console.log(error);
+      }
+    );
   }
 }

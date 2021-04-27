@@ -23,8 +23,8 @@
         <button class="btn-act" (click)="onDrawReady()" ion-button expand="block">
           Adicionar
         </button>
-        <button class="btn-act" (click)="next()" ion-button expand="block">
-          Avançar
+        <button class="btn-act" (click)="save()" ion-button expand="block" [disabled]="campoList.length === 0">
+          Salvar
         </button>
       </ion-col>
     </ion-row>

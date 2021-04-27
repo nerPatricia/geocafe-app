@@ -44,6 +44,7 @@
     "cordova-plugin-camera": "^5.0.1",
     "cordova-plugin-geolocation": "^4.1.0",
     "cordova-plugin-nativegeocoder": "^3.4.1",
+    "geoblaze": "^0.3.0",
     "georaster": "^1.5.1",
     "georaster-layer-for-leaflet": "^1.0.0",
     "geotiff": "^1.0.2",
