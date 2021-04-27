@@ -11,6 +11,7 @@ import { ModalController } from '@ionic/angular';
 import parseGeoRaster from 'georaster';
 import GeoRasterLayer from 'georaster-layer-for-leaflet';
 import Chroma from 'chroma-js';
+import Geoblaze from 'geoblaze';
 
 @Component({
   selector: 'app-home',
@@ -248,20 +249,23 @@ export class HomePage implements OnInit {
           .then((arrayBuffer) => {
             parseGeoRaster(arrayBuffer).then((georaster) => {
               console.log(georaster);
-              const min = georaster.mins[0];
-              const range = georaster.ranges[0];
-              // console.log(Chroma.brewer);
+              const min = georaster.mins[0]; // pega o min dinamico
+              const range = georaster.ranges[0]; // pega o range dinamico
+              // TODO: FIX RANGE - min e max do potencial hidrico
+              // const min = -7;
+              // const range = 7;
+              // console.log(Chroma.brewer); // exibe escalas de cores pré prontas
               const scale = Chroma.scale('Viridis');
               const newLayer = new GeoRasterLayer({
                 georaster,
                 opacity: 0.9,
                 pixelValuesToColorFn: (pixelValues) => {
-                  const pixelValue = pixelValues[0]; // there's just one band in this raster
-                  // if there's zero value, don't return a color
+                  const pixelValue = pixelValues[0]; // só tem uma banda no georaster, então pega o [0]
+                  // se o valor for 0, então não retorna uma cor
                   if (pixelValue === 0) {
                     return null;
                   }
-                  // scale to 0 - 1 used by chroma
+                  // escala de 0 - 1 usado pelo chroma.js
                   const scaledPixelValue = (pixelValue - min) / range;
                   const color = scale(scaledPixelValue).hex();
                   return color;
@@ -276,6 +280,14 @@ export class HomePage implements OnInit {
               // console.log(this.layersControl.overlays.campos);
 
               this.map.fitBounds(newLayer.getBounds());
+
+              // pega os valores do pixel do georaster no click
+              this.map.on('click', element => {
+                const latlng = [element.latlng.lng, element.latlng.lat];
+                // results is an array, which each item representing a separate band
+                const results = Geoblaze.identify(georaster, latlng);
+                console.log(results);
+              });
             });
           });
       },
