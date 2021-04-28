@@ -201,6 +201,22 @@ export class HomePage implements OnInit {
         const result = kml(new DOMParser().parseFromString(xml, 'text/xml'));
         this.kmlMaps.addData(result);
       });
+      //   this.kmlMaps = L.geoJSON(null, {
+      //     onEachFeature: function forEachFeature(feature, layer) {
+      //       const popupContent =
+      //         '<p><b>STATE: </b>' +
+      //         feature.properties.STATE_ABBR +
+      //         '</br>REGION: ' +
+      //         1111 +
+      //         '</br>STATE ABBR: ' +
+      //         12312312321 +
+      //         '</br>POP2010: ' +
+      //         '</p>';
+      //       layer.bindPopup(popupContent);
+      //     },
+      //   });
+      //   this.kmlMaps.addData(result);
+      //   this.kmlMaps.addTo(this.map);
   }
 
   public onDrawCreated(e: any) {
@@ -279,15 +295,11 @@ export class HomePage implements OnInit {
               this.map.addLayer(this.layersControl.overlays.campos);
               // console.log(this.layersControl.overlays.campos);
 
-              this.map.fitBounds(newLayer.getBounds());
+              this.getValuesOnClick(georaster);
 
-              // pega os valores do pixel do georaster no click
-              this.map.on('click', element => {
-                const latlng = [element.latlng.lng, element.latlng.lat];
-                // results is an array, which each item representing a separate band
-                const results = Geoblaze.identify(georaster, latlng);
-                console.log(results);
-              });
+              this.createMapLegend();
+
+              this.map.fitBounds(newLayer.getBounds());
             });
           });
       },
@@ -295,8 +307,58 @@ export class HomePage implements OnInit {
         console.log(error);
       }
     );
-
     // TODO: antes de salvar os campos, exibir, editar ou excluir campos selecionados
+  }
+
+  getValuesOnClick(georaster) {
+    // pega os valores do pixel do georaster no click
+    this.map.on('click', (element) => {
+      const latlng = [element.latlng.lng, element.latlng.lat];
+      // results is an array, which each item representing a separate band
+      const results = Geoblaze.identify(georaster, latlng);
+      console.log(results);
+    });
+  }
+
+  createMapLegend() {
+    const legend = new L.Control({ position: 'bottomright' });
+
+    legend.onAdd = (map) => {
+      const div = L.DomUtil.create('div', 'info legend');
+      const grades = [-7, -6, -5, -4, -3, -2, -1, 0];
+      const labels = [];
+
+      // loop through our density intervals and generate a label with a colored square for each interval
+      for (let i = 0; i < grades.length; i++) {
+        div.innerHTML +=
+          '<div style="height:20px; width:25px; text-align:center; background:' +
+          this.getColor(grades[i] + 1) +
+          '">' +
+          grades[i] +
+          '</div> ';
+      }
+      return div;
+    };
+
+    legend.addTo(this.map);
+  }
+
+  getColor(d) {
+    return (d = 0
+      ? '#800026'
+      : d > -1
+      ? '#BD0026'
+      : d > -2
+      ? '#E31A1C'
+      : d > -3
+      ? '#FC4E2A'
+      : d > -4
+      ? '#FD8D3C'
+      : d > -5
+      ? '#FEB24C'
+      : d > -6
+      ? '#FED976'
+      : '#FFEDA0');
   }
 
   async presentModal(cssClass = 'default', props?: any) {
