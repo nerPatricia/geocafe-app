@@ -1,13 +1,13 @@
 <ion-content class="ion-padding">
   <ion-grid style="height: 100%">
     <ion-row style="height: 28%">
-      <ion-col style="text-align: center; align-self: center; font-size: xxx-large;">
-        <!-- <div class="ion-text-center"><img src="assets/imgs/logo.png" /></div> -->
-        <ion-icon name="cafe-outline"></ion-icon>
+      <ion-col>
+        <div class="ion-text-center logo"><img src="assets/imgs/logo-branco.png" /></div>
+        <!-- <ion-icon name="cafe-outline"></ion-icon> -->
       </ion-col>
     </ion-row>
 
-    <ion-row>
+    <ion-row class="form-row">
       <ion-col>
         <ion-list>
           <ion-item style="margin-bottom: 5px;">
@@ -27,6 +27,12 @@
       </ion-col>
     </ion-row>
 
+    <ion-row class="fgt-psw">
+      <ion-col>
+        <p class="link">Esqueci a senha</p>
+      </ion-col>
+    </ion-row>
+
     <ion-row style="margin-top: 20px;">
       <ion-col class="ion-text-center">
         <button class="btn" color="tertiary" ion-button expand="block" (click)="login()">
@@ -36,10 +42,10 @@
     </ion-row>
     <ion-row>
       <ion-col class="ion-text-center">
-        <p style="font-size: 11px">Ainda não é cadastrado?</p>
-        <button class="btn" tertiary ion-button expand="block" (click)="register()">
+        <p class="register">Ainda não é cadastrado?&nbsp;<a class="link" (click)="register()">Crie uma conta</a></p>
+        <!-- <button class="btn" tertiary ion-button expand="block" (click)="register()">
           Criar Conta
-        </button>
+        </button> -->
       </ion-col>
     </ion-row>
   </ion-grid>
