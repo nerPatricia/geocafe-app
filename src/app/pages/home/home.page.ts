@@ -27,6 +27,7 @@ export class HomePage implements OnInit {
   // 0 - apenas exibição; 1 - seleção de campo em área que ja existe; 2 - novo campo (draw)
   // 3 - criou um poligono valido; 4 - salvou um poligono e recuperou o geotiff
   campoControl = 0;
+  selecionaAreaDoKML = false;
   campoList = []; // lista de áreas de desenho completo
   // Layer base de mapa satélite
   sateliteMap = L.tileLayer(
@@ -135,11 +136,15 @@ export class HomePage implements OnInit {
     // O CONTROLE DE ESTADO DO MAPA É FEITO POR ESSE CAMPOCONTROL
     // 0 - apenas exibição do mapa; 1 - tela de seleção de area que ja existe; 2 - inicializa um novo campo (novo draw)
     // 3 - criou um poligono valido; 4 - salvou um poligono e recuperou o geotiff
-    this.authService.campoControl.subscribe((data) => {
+    this.authService.campoControl.subscribe((data: any) => {
       console.log('SUBSCRIBE: ', data);
       this.campoControl = data;
       if (data === 2) {
         this.setDrawOption();
+      } else if (data === 1) {
+        this.setDrawOption();
+        this.selecionaAreaDoKML = true;
+        this.verifyClickKMLArea();
       } else if (data === 0) {
         this.polygonDrawer.disable();
         this.campoList = [];
@@ -162,12 +167,20 @@ export class HomePage implements OnInit {
   }
 
   onDrawReady(drawControl?: L.Control.Draw) {
-    // INICIALIZA O OBJETO QUE VAI DESENHAR O POLIGONO
-    this.polygonDrawer = new L.Draw.Polygon(this.map);
-    // ATIVA O OBJETO PRA PODER DESENHAR
-    this.polygonDrawer.enable();
-    this.authService.campoControl.next(2);
-    console.log('DRAW READY');
+    // SE FOR NO MODO DE SELEÇÃO DE AREA PELO KML
+    // NÃO PODE TER CAMPOCONTROL 2 AQUI SENÃO VAI LIBERAR O DRAW DE POLIGONO
+    if (!this.selecionaAreaDoKML) {
+      // INICIALIZA O OBJETO QUE VAI DESENHAR O POLIGONO
+      this.polygonDrawer = new L.Draw.Polygon(this.map);
+      // ATIVA O OBJETO PRA PODER DESENHAR
+      this.polygonDrawer.enable();
+      this.authService.campoControl.next(2);
+      console.log('DRAW READY');
+    } else {
+      // DEPOIS DA PRIMEIRA VALIDAÇÃO JÁ PODE LIBERAR O DRAW DE POLIGONO
+      // SE NÃO, NA HORA DE ADICIONAR NOVO CAMPO VAI TA BLOQUEADO
+      this.selecionaAreaDoKML = !this.selecionaAreaDoKML;
+    }
   }
 
   onDrawStart(event) {
@@ -195,9 +208,25 @@ export class HomePage implements OnInit {
         'Satelite Maps': this.sateliteMap,
       },
       overlays: {
-        'KML Maps': this.kmlMaps,
+        KML_Map: this.kmlMaps,
       },
     };
+  }
+
+  verifyClickKMLArea() {
+    // trás a layer com o KML pra destaque no mapa
+    this.map.addLayer(this.layersControl.overlays.KML_Map);
+
+    this.kmlMaps.eachLayer((layers) => {
+      layers.on('click', (layerClicada) => {
+        console.log(layerClicada);
+        this.presentModal('center-modal', {
+          type: 'nomeCampoSelecionado',
+          layer: layerClicada,
+          campoList: this.campoList,
+        });
+      });
+    });
   }
 
   ionViewDidEnter() {
@@ -228,9 +257,6 @@ export class HomePage implements OnInit {
         campoList: this.campoList,
       });
     }
-    // SE CRIOU UM POLIGONO VALIDO, ENTÃO SETA O CONTROLE PRA MODO 3
-    // VAI LIBERAR OS BOTÕES DE SALVAR E ADICIONAR
-    this.authService.campoControl.next(3);
     console.log('ON DRAW CREATED');
   }
 
@@ -377,7 +403,6 @@ export class HomePage implements OnInit {
     // amarelo - #f3ec0f - valores de -1,5 até -2,4
     // laranja - #f3a20f - valores de -2,5 até -3,5
     // vermelho - #f30f0f - valores de -3,5 pra baixo
-    console.log(d);
     return d > 0.5
       ? '#00d0ff'
       : d <= 0.5 && d >= -1.4
@@ -403,13 +428,22 @@ export class HomePage implements OnInit {
       const retorno = response.data || null;
       if (retorno) {
         if (retorno.addCampo) {
+          let innerLayer = null;
+          if (props.layer.layer) {
+            innerLayer = props.layer.layer;
+          } else {
+            innerLayer = props.layer;
+          }
           const infoCampo = {
-            coordinates: props.layer._latlngs[0],
+            coordinates: innerLayer._latlngs[0],
             name: retorno.nomeCampo,
             user_id: '0',
           };
           this.campoList.push(infoCampo);
-          this.drawItems.addLayer(props.layer);
+          this.drawItems.addLayer(innerLayer);
+          // SE CRIOU UM POLIGONO VALIDO, ENTÃO SETA O CONTROLE PRA MODO 3
+          // VAI LIBERAR OS BOTÕES DE SALVAR E ADICIONAR
+          this.authService.campoControl.next(3);
         }
       }
     });

@@ -1,12 +1,12 @@
 <app-header *ngIf="campoControl == 2" title="cafe" [drawMode]="true" [drawMessage]="drawMessage"></app-header>
 
 <ion-content class="ion-no-padding">
-  <ion-row class="fullscreen" [style.height]="campoControl > 0 ? '88%' : null" [hidden]="!viewModeFlag">
+  <ion-row class="fullscreen" [style.height]="campoControl > 1 ? '88%' : null" [hidden]="!viewModeFlag">
     <ion-col>
       <div leaflet [leafletOptions]="options" [leafletLayersControl]="layersControl"
         (leafletMapReady)="onMapReady($event)">
-        <div *ngIf="campoControl == 2 || campoControl == 3" leafletDraw [leafletDrawOptions]="drawOptions"
-          [leafletDrawLocal]="drawLocal" (leafletDrawCreated)="onDrawCreated($event)"
+        <div *ngIf="campoControl == 1 || campoControl == 2 || campoControl == 3" leafletDraw
+          [leafletDrawOptions]="drawOptions" [leafletDrawLocal]="drawLocal" (leafletDrawCreated)="onDrawCreated($event)"
           (leafletDrawReady)="onDrawReady($event)" (leafletDrawStart)="onDrawStart($event)"
           (leafletDrawDeleted)="onDrawDeleted($event)">
           <div [leafletLayer]="drawItems"></div>
@@ -14,7 +14,7 @@
       </div>
     </ion-col>
   </ion-row>
-  <ion-row *ngIf="campoControl > 0" style="height: 12%; background-color: white;">
+  <ion-row *ngIf="campoControl > 1" style="height: 12%; background-color: white;">
     <ion-row class="box-modal">
       <ion-col size="4" class="alinha">
         <p><strong>Selecionado:</strong></p>
