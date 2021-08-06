@@ -52,6 +52,7 @@ export class TabsPage {
   }
 
   closeAddCampo() {
+    console.log('CLOSE ADD CAMPO NO TAB COMPONENT');
     this.authService.campoControl.next(0);
     this.campoControl = 0;
     // TODO: quando fechar a adição de campo,

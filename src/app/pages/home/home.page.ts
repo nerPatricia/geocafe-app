@@ -23,6 +23,7 @@ export class HomePage implements OnInit {
   map: any;
   viewModeFlag = false;
   drawMessage = 'Posicione um ponto para demarcar uma área.'; // msg no header enquanto o desenho da área é feito
+  polygonDrawer; // OBJETO DO DESENHO NO MAPA
   campoControl = 0; // 0 - apenas exibição; 1 - seleção de campo em área que ja existe; 2 - novo campo (draw)
   campoList = []; // lista de áreas de desenho completo
   // Layer base de mapa satélite
@@ -129,9 +130,12 @@ export class HomePage implements OnInit {
     private loading: LoadingService
   ) {
     this.authService.campoControl.subscribe((data) => {
+      console.log('SUBSCRIBE: ', data);
       this.campoControl = data;
       if (data === 2) {
         this.setDrawOption();
+      } else if (data === 0) {
+        this.polygonDrawer.disable();
       }
     });
   }
@@ -146,13 +150,15 @@ export class HomePage implements OnInit {
 
   onMapReady(map) {
     this.map = map;
+    console.log('ON MAP READY');
   }
 
   onDrawReady(drawControl?: L.Control.Draw) {
-    // TODO: deixar a linha amarela e não azul
-    // não sei pq ta azul na vdd
-    const polygonDrawer = new L.Draw.Polygon(this.map);
-    polygonDrawer.enable();
+    // INICIALIZA O OBJETO QUE VAI DESENHAR O POLIGONO
+    this.polygonDrawer = new L.Draw.Polygon(this.map);
+    // ATIVA O OBJETO PRA PODER DESENHAR
+    this.polygonDrawer.enable();
+    console.log('DRAW READY');
   }
 
   onDrawStart(event) {
@@ -188,6 +194,7 @@ export class HomePage implements OnInit {
   ionViewDidEnter() {
     this.viewModeFlag = true;
     this.invalidateSize();
+    console.log('ION VIEW DID ENTER');
   }
 
   // Transforma o KML de três pontas em geoJSON e adiciona na layer
@@ -201,22 +208,22 @@ export class HomePage implements OnInit {
         const result = kml(new DOMParser().parseFromString(xml, 'text/xml'));
         this.kmlMaps.addData(result);
       });
-      //   this.kmlMaps = L.geoJSON(null, {
-      //     onEachFeature: function forEachFeature(feature, layer) {
-      //       const popupContent =
-      //         '<p><b>STATE: </b>' +
-      //         feature.properties.STATE_ABBR +
-      //         '</br>REGION: ' +
-      //         1111 +
-      //         '</br>STATE ABBR: ' +
-      //         12312312321 +
-      //         '</br>POP2010: ' +
-      //         '</p>';
-      //       layer.bindPopup(popupContent);
-      //     },
-      //   });
-      //   this.kmlMaps.addData(result);
-      //   this.kmlMaps.addTo(this.map);
+    //   this.kmlMaps = L.geoJSON(null, {
+    //     onEachFeature: function forEachFeature(feature, layer) {
+    //       const popupContent =
+    //         '<p><b>STATE: </b>' +
+    //         feature.properties.STATE_ABBR +
+    //         '</br>REGION: ' +
+    //         1111 +
+    //         '</br>STATE ABBR: ' +
+    //         12312312321 +
+    //         '</br>POP2010: ' +
+    //         '</p>';
+    //       layer.bindPopup(popupContent);
+    //     },
+    //   });
+    //   this.kmlMaps.addData(result);
+    //   this.kmlMaps.addTo(this.map);
   }
 
   public onDrawCreated(e: any) {
@@ -229,6 +236,11 @@ export class HomePage implements OnInit {
         campoList: this.campoList,
       });
     }
+    console.log('ON DRAW CREATED');
+  }
+
+  onDrawDeleted(e: any) {
+    console.log('ON DRAW DELETED');
   }
 
   // TODO: verificar se vale a pena mesmo manter isso daqui

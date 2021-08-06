@@ -7,7 +7,7 @@
         (leafletMapReady)="onMapReady($event)">
         <div *ngIf="campoControl == 2" leafletDraw [leafletDrawOptions]="drawOptions" [leafletDrawLocal]="drawLocal"
           (leafletDrawCreated)="onDrawCreated($event)" (leafletDrawReady)="onDrawReady($event)"
-          (leafletDrawStart)="onDrawStart($event)">
+          (leafletDrawStart)="onDrawStart($event)" (leafletDrawDeleted)="onDrawDeleted($event)">
           <div [leafletLayer]="drawItems"></div>
         </div>
       </div>
