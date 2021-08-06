@@ -46,6 +46,7 @@ export class HomePage implements OnInit {
     center: L.latLng([-21.3726284, -45.5167047]),
   };
   // Objetos usados pra desenhar os campos e configurar labels
+  // TODOS OS DESENHOS DE AREA SÃO SALVOS EM LAYER NO drawItems e no campoList
   drawItems: L.FeatureGroup = L.featureGroup();
   drawOptions;
   // TODO: botar essa variavel em algum outro lugar, ocupa muito espaço
@@ -129,6 +130,9 @@ export class HomePage implements OnInit {
     private fieldService: FieldService,
     private loading: LoadingService
   ) {
+    // O CONTROLE DE ESTADO DO MAPA É FEITO POR ESSE CAMPOCONTROL
+    // 0 - apenas exibição do mapa; 1 - tela de seleção de area que ja existe; 2 - inicializa um novo campo (novo draw)
+    // 3 - criou um poligono valido
     this.authService.campoControl.subscribe((data) => {
       console.log('SUBSCRIBE: ', data);
       this.campoControl = data;
@@ -136,6 +140,8 @@ export class HomePage implements OnInit {
         this.setDrawOption();
       } else if (data === 0) {
         this.polygonDrawer.disable();
+        this.campoList = [];
+        this.drawItems.clearLayers();
       }
     });
   }
@@ -158,6 +164,7 @@ export class HomePage implements OnInit {
     this.polygonDrawer = new L.Draw.Polygon(this.map);
     // ATIVA O OBJETO PRA PODER DESENHAR
     this.polygonDrawer.enable();
+    this.authService.campoControl.next(2);
     console.log('DRAW READY');
   }
 
@@ -236,6 +243,9 @@ export class HomePage implements OnInit {
         campoList: this.campoList,
       });
     }
+    // SE CRIOU UM POLIGONO VALIDO, ENTÃO SETA O CONTROLE PRA MODO 3
+    // VAI LIBERAR OS BOTÕES DE SALVAR E ADICIONAR
+    this.authService.campoControl.next(3);
     console.log('ON DRAW CREATED');
   }
 

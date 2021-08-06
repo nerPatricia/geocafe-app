@@ -10,13 +10,17 @@ import { ActionSheetController, IonTabs } from '@ionic/angular';
 })
 export class TabsPage {
   @ViewChild('tabs') tabRef: IonTabs;
-  campoControl = 0; // 0 - apenas exibição; 1 - seleção de campo; 2 - novo campo (draw)
+  campoControl = 0; // 0 - apenas exibição; 1 - seleção de campo; 2 - novo campo (draw); 3 - adicionou um campo valido
 
   constructor(
     private actionSheetCtrl: ActionSheetController,
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) {
+    // this.authService.campoControl.subscribe((data) => {
+    //   this.campoControl = data;
+    // });
+  }
 
   ionViewDidLoad() {
     console.log(this.tabRef);
