@@ -45,7 +45,7 @@ p:nth-child(1) {
 
 .btn-act {
   background-color: var(--ion-color-primary);
-  color: white;
+  color: #fff;
   font-weight: bold;
   height: 2.5em;
   width: 40%;
@@ -69,6 +69,10 @@ p:nth-child(1) {
   opacity: 0.7;
 }
 
+
+a {
+  color: rgb(15, 165, 202);
+}
 
 
 

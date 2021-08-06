@@ -287,13 +287,13 @@ export class HomePage implements OnInit {
           .then((arrayBuffer) => {
             parseGeoRaster(arrayBuffer).then((georaster) => {
               console.log(georaster);
-              const min = georaster.mins[0]; // pega o min dinamico
-              const range = georaster.ranges[0]; // pega o range dinamico
+              // const min = georaster.mins[0]; // pega o min dinamico
+              // const range = georaster.ranges[0]; // pega o range dinamico
               // TODO: FIX RANGE - min e max do potencial hidrico
-              // const min = -7;
-              // const range = 7;
+              const min = -7;
+              const range = 7;
               // console.log(Chroma.brewer); // exibe escalas de cores pré prontas
-              const scale = Chroma.scale('Viridis');
+              const scale = Chroma.scale(this.newPalette());
               const newLayer = new GeoRasterLayer({
                 georaster,
                 opacity: 0.9,
@@ -305,6 +305,7 @@ export class HomePage implements OnInit {
                   }
                   // escala de 0 - 1 usado pelo chroma.js
                   const scaledPixelValue = (pixelValue - min) / range;
+                  // const scaledPixelValue = this.newPalette(pixelValue, min, range);
                   const color = scale(scaledPixelValue).hex();
                   return color;
                 },
@@ -332,12 +333,29 @@ export class HomePage implements OnInit {
     // TODO: antes de salvar os campos, exibir, editar ou excluir campos selecionados
   }
 
+  newPalette() {
+    return Chroma.scale([
+      '#f30f0f',
+      '#f5530e',
+      '#f6780d',
+      '#f7970d',
+      '#00d0ff',
+    ]);
+  }
+
   getValuesOnClick(georaster) {
     // pega os valores do pixel do georaster no click
     this.map.on('click', (element) => {
       const latlng = [element.latlng.lng, element.latlng.lat];
       // results is an array, which each item representing a separate band
       const results = Geoblaze.identify(georaster, latlng);
+      const popupContent =
+        '<p><b>Potencial Hídrico: </b>' + results + 'MPa</p>';
+      // this.drawItems.layer.bindPopup(popupContent);
+      let popup = L.popup()
+        .setLatLng(new L.LatLng(element.latlng.lat, element.latlng.lng))
+        .setContent(popupContent)
+        .openOn(this.map);
       console.log(results);
     });
   }
@@ -347,14 +365,14 @@ export class HomePage implements OnInit {
 
     legend.onAdd = (map) => {
       const div = L.DomUtil.create('div', 'info legend');
-      const grades = [-7, -6, -5, -4, -3, -2, -1, 0];
+      const grades = [-3.6, -2.5, -1.5, -0.5, 1.5];
       const labels = [];
 
       // loop through our density intervals and generate a label with a colored square for each interval
       for (let i = 0; i < grades.length; i++) {
         div.innerHTML +=
           '<div style="height:20px; width:25px; text-align:center; background:' +
-          this.getColor(grades[i] + 1) +
+          this.getColor(grades[i]) +
           '">' +
           grades[i] +
           '</div> ';
@@ -366,21 +384,23 @@ export class HomePage implements OnInit {
   }
 
   getColor(d) {
-    return (d = 0
-      ? '#800026'
-      : d > -1
-      ? '#BD0026'
-      : d > -2
-      ? '#E31A1C'
-      : d > -3
-      ? '#FC4E2A'
-      : d > -4
-      ? '#FD8D3C'
-      : d > -5
-      ? '#FEB24C'
-      : d > -6
-      ? '#FED976'
-      : '#FFEDA0');
+    // azul - #00d0ff - valores ate 0,5/1.5
+    // verde - #49d402 - valores de 0,5 até -1,4
+    // amarelo - #f3ec0f - valores de -1,5 até -2,4
+    // laranja - #f3a20f - valores de -2,5 até -3,5
+    // vermelho - #f30f0f - valores de -3,5 pra baixo
+    console.log(d);
+    return d > 0.5
+      ? '#00d0ff'
+      : d <= 0.5 && d >= -1.4
+      ? '#49d402'
+      : d <= -1.5 && d >= -2.4
+      ? '#f3ec0f'
+      : d <= -2.5 && d >= -3.5
+      ? '#f3a20f'
+      : d < -3.5
+      ? '#f30f0f'
+      : '#fff';
   }
 
   async presentModal(cssClass = 'default', props?: any) {
