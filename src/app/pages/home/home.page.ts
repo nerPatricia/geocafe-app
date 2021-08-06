@@ -24,7 +24,9 @@ export class HomePage implements OnInit {
   viewModeFlag = false;
   drawMessage = 'Posicione um ponto para demarcar uma área.'; // msg no header enquanto o desenho da área é feito
   polygonDrawer; // OBJETO DO DESENHO NO MAPA
-  campoControl = 0; // 0 - apenas exibição; 1 - seleção de campo em área que ja existe; 2 - novo campo (draw)
+  // 0 - apenas exibição; 1 - seleção de campo em área que ja existe; 2 - novo campo (draw)
+  // 3 - criou um poligono valido; 4 - salvou um poligono e recuperou o geotiff
+  campoControl = 0;
   campoList = []; // lista de áreas de desenho completo
   // Layer base de mapa satélite
   sateliteMap = L.tileLayer(
@@ -132,7 +134,7 @@ export class HomePage implements OnInit {
   ) {
     // O CONTROLE DE ESTADO DO MAPA É FEITO POR ESSE CAMPOCONTROL
     // 0 - apenas exibição do mapa; 1 - tela de seleção de area que ja existe; 2 - inicializa um novo campo (novo draw)
-    // 3 - criou um poligono valido
+    // 3 - criou um poligono valido; 4 - salvou um poligono e recuperou o geotiff
     this.authService.campoControl.subscribe((data) => {
       console.log('SUBSCRIBE: ', data);
       this.campoControl = data;
@@ -201,7 +203,6 @@ export class HomePage implements OnInit {
   ionViewDidEnter() {
     this.viewModeFlag = true;
     this.invalidateSize();
-    console.log('ION VIEW DID ENTER');
   }
 
   // Transforma o KML de três pontas em geoJSON e adiciona na layer
@@ -215,22 +216,6 @@ export class HomePage implements OnInit {
         const result = kml(new DOMParser().parseFromString(xml, 'text/xml'));
         this.kmlMaps.addData(result);
       });
-    //   this.kmlMaps = L.geoJSON(null, {
-    //     onEachFeature: function forEachFeature(feature, layer) {
-    //       const popupContent =
-    //         '<p><b>STATE: </b>' +
-    //         feature.properties.STATE_ABBR +
-    //         '</br>REGION: ' +
-    //         1111 +
-    //         '</br>STATE ABBR: ' +
-    //         12312312321 +
-    //         '</br>POP2010: ' +
-    //         '</p>';
-    //       layer.bindPopup(popupContent);
-    //     },
-    //   });
-    //   this.kmlMaps.addData(result);
-    //   this.kmlMaps.addTo(this.map);
   }
 
   public onDrawCreated(e: any) {
@@ -279,9 +264,12 @@ export class HomePage implements OnInit {
       return;
     }
 
+    console.log(this.layersControl.overlays.campos);
+
     this.fieldService.saveField(this.campoList).then(
       (res: any) => {
         console.log(res);
+        // TODO: verificar esse [0] aqui pra ver se nao ta pegando só o primeiro elemento
         fetch(`${this.url}field/cut/${res.data[0].id}`)
           .then((response) => response.arrayBuffer())
           .then((arrayBuffer) => {
@@ -305,24 +293,26 @@ export class HomePage implements OnInit {
                   }
                   // escala de 0 - 1 usado pelo chroma.js
                   const scaledPixelValue = (pixelValue - min) / range;
-                  // const scaledPixelValue = this.newPalette(pixelValue, min, range);
                   const color = scale(scaledPixelValue).hex();
                   return color;
                 },
                 resolution: 256, // optional parameter for adjusting display resolution
               });
+
               this.layersControl.overlays = {
                 ...this.layersControl.overlays,
                 campos: newLayer,
               };
+              // TODO: criar uma layer com cada nome de campo que foi salvo
+              // desse jeito que ta hoje, quando cria um novo ele substitui o anterior
+
               this.map.addLayer(this.layersControl.overlays.campos);
               // console.log(this.layersControl.overlays.campos);
 
               this.getValuesOnClick(georaster);
-
               this.createMapLegend();
-
               this.map.fitBounds(newLayer.getBounds());
+              this.authService.campoControl.next(0);
             });
           });
       },
@@ -351,12 +341,10 @@ export class HomePage implements OnInit {
       const results = Geoblaze.identify(georaster, latlng);
       const popupContent =
         '<p><b>Potencial Hídrico: </b>' + results + 'MPa</p>';
-      // this.drawItems.layer.bindPopup(popupContent);
       let popup = L.popup()
         .setLatLng(new L.LatLng(element.latlng.lat, element.latlng.lng))
         .setContent(popupContent)
         .openOn(this.map);
-      console.log(results);
     });
   }
 

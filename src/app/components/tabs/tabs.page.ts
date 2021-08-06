@@ -10,16 +10,18 @@ import { ActionSheetController, IonTabs } from '@ionic/angular';
 })
 export class TabsPage {
   @ViewChild('tabs') tabRef: IonTabs;
-  campoControl = 0; // 0 - apenas exibição; 1 - seleção de campo; 2 - novo campo (draw); 3 - adicionou um campo valido
+  // 0 - apenas exibição; 1 - seleção de campo; 2 - novo campo (draw);
+  // 3 - adicionou um campo valido; 4 - salvou um poligono e recuperou o geotiff
+  campoControl = 0;
 
   constructor(
     private actionSheetCtrl: ActionSheetController,
     private authService: AuthService,
     private router: Router
   ) {
-    // this.authService.campoControl.subscribe((data) => {
-    //   this.campoControl = data;
-    // });
+    this.authService.campoControl.subscribe((data) => {
+      this.campoControl = data || 0;
+    });
   }
 
   ionViewDidLoad() {
@@ -59,8 +61,6 @@ export class TabsPage {
     console.log('CLOSE ADD CAMPO NO TAB COMPONENT');
     this.authService.campoControl.next(0);
     this.campoControl = 0;
-    // TODO: quando fechar a adição de campo,
-    // se não salvou o campo, apagar desenho do mapa
   }
 
   logout() {
