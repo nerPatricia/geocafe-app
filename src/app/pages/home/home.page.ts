@@ -21,6 +21,7 @@ import Geoblaze from 'geoblaze';
 export class HomePage implements OnInit {
   url = environment.url;
   map: any;
+  authData: any; // TODO: definir uma interface aqui, são os dados do usuário logado salvos no localstorage
   viewModeFlag = false;
   drawMessage = 'Posicione um ponto para demarcar uma área.'; // msg no header enquanto o desenho da área é feito
   polygonDrawer; // OBJETO DO DESENHO NO MAPA
@@ -151,6 +152,8 @@ export class HomePage implements OnInit {
         this.drawItems.clearLayers();
       }
     });
+
+    this.atualizaAuthData();
   }
 
   invalidateSize() {
@@ -247,6 +250,29 @@ export class HomePage implements OnInit {
       });
   }
 
+  atualizaAuthData() {
+    this.authService.getAuthData().then(
+      (data: any) => {
+        this.authData = data;
+      },
+      (error) => {
+        console.log('erro ao pegar dados do usuário');
+      }
+    );
+  }
+
+  async atualizaFieldsAuthData(userId) {
+    this.fieldService.getAllFieldsByUser(userId).then(
+      async (responseFields: any) => {
+        this.authData.fields = responseFields.data;
+        await this.authService.saveAuth(this.authData);
+      },
+      (error) => {
+        console.log('erro ao atualizar authData');
+      }
+    );
+  }
+
   public onDrawCreated(e: any) {
     const { layerType, layer } = e;
     if (layerType === 'polygon') {
@@ -296,7 +322,7 @@ export class HomePage implements OnInit {
       (res: any) => {
         console.log(res);
         // TODO: verificar esse [0] aqui pra ver se nao ta pegando só o primeiro elemento
-        fetch(`${this.url}field/cut/${res.data[0].id}`)
+        fetch(`${this.url}field/cut/${res.data[0].id}?date=05_05_2021`)
           .then((response) => response.arrayBuffer())
           .then((arrayBuffer) => {
             parseGeoRaster(arrayBuffer).then((georaster) => {
@@ -335,10 +361,11 @@ export class HomePage implements OnInit {
               this.map.addLayer(this.layersControl.overlays.campos);
               // console.log(this.layersControl.overlays.campos);
 
-              this.getValuesOnClick(georaster);
-              this.createMapLegend();
-              this.map.fitBounds(newLayer.getBounds());
-              this.authService.campoControl.next(0);
+              this.getValuesOnClick(georaster); // pega os valores de potencial hidrico no click
+              this.createMapLegend(); // cria a lengenda no mapa
+              this.map.fitBounds(newLayer.getBounds()); // trás a nova layer como prioritária
+              this.atualizaFieldsAuthData(this.authData.user_id); // atualiza os campos do usuário em localStorage
+              this.authService.campoControl.next(0); // volta a tela pra modo de exibição do mapa
             });
           });
       },
@@ -437,7 +464,7 @@ export class HomePage implements OnInit {
           const infoCampo = {
             coordinates: innerLayer._latlngs[0],
             name: retorno.nomeCampo,
-            user_id: '0',
+            user_id: this.authData ? this.authData.user_id : '0',
           };
           this.campoList.push(infoCampo);
           this.drawItems.addLayer(innerLayer);

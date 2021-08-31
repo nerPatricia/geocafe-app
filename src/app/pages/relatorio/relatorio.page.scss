@@ -1,0 +1,82 @@
+div.leaflet-container {
+  position: absolute !important;
+  width: 100%;
+  height: 100%;
+}
+
+.fullscreen {
+  height: 100%;
+  width: 100%;
+
+  ion-col {
+    padding: 0;
+  }
+}
+
+* {
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.box-modal {
+  align-self: center;
+  width: 100%;
+}
+
+.alinha {
+  text-align: center;
+  align-self: center;
+}
+
+.alerta {
+  font-size: 12px;
+  color: var(--ion-color-tertiary);
+}
+
+p:nth-child(1) {
+  margin-bottom: 10px;
+}
+
+.box-btn {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.btn-act {
+  background-color: var(--ion-color-primary);
+  color: #fff;
+  font-weight: bold;
+  height: 2.5em;
+  width: 40%;
+  border-radius: 5px;
+}
+
+.btn-act:nth-child(1) {
+  background-color: var(--ion-color-secondary);
+}
+
+.legend {
+  line-height: 18px;
+  color: #555;
+}
+
+.legend {
+  width: 18px;
+  height: 18px;
+  float: left;
+  margin-right: 8px;
+  opacity: 0.7;
+}
+
+
+// aumenta o tamanho do botão
+// .leaflet-touch .leaflet-bar a {
+//   width: 35px;
+//     height: 35px;
+//     line-height: 30px;
+// }
+// tem que aumentar o tamanho desse icone tbm
+// .leaflet-retina .leaflet-draw-toolbar a {
+//   background-image: linear-gradient(transparent,transparent),url(spritesheet.svg);
+// }

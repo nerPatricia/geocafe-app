@@ -1,3 +1,4 @@
+import { FieldService } from './../../service/field.service';
 import { LoadingService } from './../../service/loading.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
@@ -19,7 +20,8 @@ export class LoginPage implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private loading: LoadingService
+    private loading: LoadingService,
+    private fieldService: FieldService
   ) {}
 
   ngOnInit() {}
@@ -28,7 +30,7 @@ export class LoginPage implements OnInit {
     this.router.navigateByUrl('/register');
   }
 
-  login() {
+  async login() {
     if (this.userData.email === '' || this.userData.password === '') {
       return;
     }
@@ -36,8 +38,19 @@ export class LoginPage implements OnInit {
     this.loading.present();
     this.authService.login(this.userData.email, this.userData.password).finally(() => this.loading.dismiss()).then(
       (response: any) => {
-        // await this.authService.saveAuth(response);
-        this.router.navigateByUrl('/home');
+        this.fieldService.getAllFieldsByUser(response.user_id).then(
+          async (responseFields: any) => {
+            const authData = {
+              ...response,
+              ...responseFields.data
+            };
+            await this.authService.saveAuth(authData);
+            this.authService.setAuthDataObservable();
+            this.router.navigateByUrl('/home');
+          }, error => {
+            console.log(error);
+          }
+        );
       }, error => {
         Swal.fire('Erro', 'Usuário e/ou senha inválidos', 'error');
       }

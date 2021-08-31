@@ -1,3 +1,4 @@
+import { FieldService } from './field.service';
 import { environment } from './../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -5,7 +6,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { Storage } from '@ionic/storage';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private _authData: BehaviorSubject<any> | null = new BehaviorSubject(null); // prettier-ignore
@@ -16,14 +17,17 @@ export class AuthService {
 
   url = environment.url;
 
-  constructor(public http: HttpClient, private storage: Storage) { }
+  constructor(
+    public http: HttpClient,
+    private storage: Storage
+  ) {}
 
   login(username, password) {
     const url = this.url + 'user/login';
     return this.http.post(url, { username, password }).toPromise();
   }
 
-  register(registerData){
+  register(registerData) {
     const url = this.url + 'user';
     return this.http.post(url, registerData).toPromise();
   }
@@ -40,4 +44,8 @@ export class AuthService {
     await this.storage.remove('authData');
   }
 
+  async setAuthDataObservable() {
+    const authData = await this.getAuthData();
+    this._authData.next(authData);
+  }
 }

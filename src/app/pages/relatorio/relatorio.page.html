@@ -1,0 +1,39 @@
+<app-header *ngIf="campoControl == 2" title="cafe" [drawMode]="true" [drawMessage]="drawMessage"></app-header>
+
+<ion-content class="ion-no-padding">
+  <ion-row class="fullscreen" [style.height]="campoControl > 1 ? '88%' : null" [hidden]="!viewModeFlag">
+    <ion-col>
+      <div leaflet [leafletOptions]="options" [leafletLayersControl]="layersControl"
+        (leafletMapReady)="onMapReady($event)">
+        <div *ngIf="campoControl == 1 || campoControl == 2 || campoControl == 3" leafletDraw
+          [leafletDrawOptions]="drawOptions" [leafletDrawLocal]="drawLocal" (leafletDrawCreated)="onDrawCreated($event)"
+          (leafletDrawReady)="onDrawReady($event)" (leafletDrawStart)="onDrawStart($event)"
+          (leafletDrawDeleted)="onDrawDeleted($event)">
+          <div [leafletLayer]="drawItems"></div>
+        </div>
+      </div>
+    </ion-col>
+  </ion-row>
+  <ion-row *ngIf="campoControl > 1" style="height: 12%; background-color: white;">
+    <ion-row class="box-modal">
+      <ion-col size="4" class="alinha">
+        <p><strong>Selecionado:</strong></p>
+        <p><strong>{{ campoList.length }}</strong> campo{{campoList.length > 1 || campoList.length == 0 ? 's' : ''}}</p>
+      </ion-col>
+      <ion-col size="8" class="box-btn">
+        <button class="btn-act" (click)="onDrawReady()" [disabled]="campoList.length === 0 || campoControl === 2"
+          ion-button expand="block">
+          Adicionar+
+        </button>
+        <button class="btn-act" (click)="save()" ion-button expand="block"
+          [disabled]="campoList.length === 0 || campoControl === 2">
+          Salvar
+        </button>
+      </ion-col>
+      <ion-col size="12" *ngIf="campoList.length === 0 || campoControl === 2" style="text-align: center;">
+        <p class="alerta">
+          Termine a edição para salvar o campo ou adicionar um novo.</p>
+      </ion-col>
+    </ion-row>
+  </ion-row>
+</ion-content>

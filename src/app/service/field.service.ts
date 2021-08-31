@@ -16,6 +16,11 @@ export class FieldService {
     return this.http.post(url, fieldData).toPromise();
   }
 
+  getAllFieldsByUser(userId) {
+    const url = this.url + 'field/?user_id=' + userId;
+    return this.http.get(url).toPromise();
+  }
+
   getFieldById(fieldId) {
     fieldId = '606d1823bbf87d520d62e21a';
     const url = this.url + 'field/' + fieldId;
@@ -24,7 +29,7 @@ export class FieldService {
 
   getFieldTiff(fieldId) {
     fieldId = '606d1823bbf87d520d62e21a';
-    const url = this.url + 'field/cut/' + fieldId;
+    const url = this.url + 'field/cut/' + fieldId + '?date=05_05_2021';
     return this.http.get(url).toPromise();
   }
 }
