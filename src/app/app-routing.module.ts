@@ -11,6 +11,10 @@ const routes: Routes = [
     loadChildren: () => import('./components/tabs/tabs.module').then(m => m.TabsPageModule)
   },
   {
+    path: 'relatorio',
+    loadChildren: () => import('./components/tabs/tabs.module').then(m => m.TabsPageModule)
+  },
+  {
     path: 'register',
     loadChildren: './pages/register/register.module#RegisterPageModule'
   }

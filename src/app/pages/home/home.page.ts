@@ -264,7 +264,7 @@ export class HomePage implements OnInit {
   async atualizaFieldsAuthData(userId) {
     this.fieldService.getAllFieldsByUser(userId).then(
       async (responseFields: any) => {
-        this.authData.fields = responseFields.data;
+        this.authData.fields = responseFields.data.fields;
         await this.authService.saveAuth(this.authData);
       },
       (error) => {

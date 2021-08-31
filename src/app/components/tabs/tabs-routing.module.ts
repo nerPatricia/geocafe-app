@@ -17,7 +17,7 @@ const routes: Routes = [
       },
       {
         path: 'relatorios',
-        loadChildren: () => import('../../pages/home/home.module').then(m => m.HomePageModule)
+        loadChildren: () => import('../../pages/relatorio/relatorio.module').then(m => m.RelatorioPageModule)
       },
       {
         path: 'ajustes',

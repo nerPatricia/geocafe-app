@@ -21,6 +21,7 @@ import Geoblaze from 'geoblaze';
 export class RelatorioPage implements OnInit {
   url = environment.url;
   map: any;
+  authData: any; // INFOS DO USUARIO LOGADO
   viewModeFlag = false;
   polygonDrawer; // OBJETO DO DESENHO NO MAPA
   selecionaAreaDoKML = false;
@@ -55,10 +56,9 @@ export class RelatorioPage implements OnInit {
   constructor(
     private authService: AuthService,
     private modalCtrl: ModalController,
-    private fieldService: FieldService,
-    private loading: LoadingService
+    private fieldService: FieldService
   ) {
-    this.polygonDrawer.disable();
+    // this.polygonDrawer.disable();
     this.campoList = [];
     this.drawItems.clearLayers();
   }
@@ -89,6 +89,8 @@ export class RelatorioPage implements OnInit {
         KML_Map: this.kmlMaps,
       },
     };
+
+    this.getFields();
   }
 
   ionViewDidEnter() {
@@ -114,54 +116,67 @@ export class RelatorioPage implements OnInit {
     // SE SIM, FAZ UM GET FIELD PELO ID PEGANDO O TIFF PELA DATA SELECIONADA
     // PASSAR POR TODOS OS FIELDS DO USUARIO
     // SE NÃO HOUVER ALGUM FIELD, RETORNAR UMA MSG
-    let res: any;
-    // TODO: verificar esse [0] aqui pra ver se nao ta pegando só o primeiro elemento
-    fetch(`${this.url}field/cut/${res.data[0].id}?date="05_05_2021"`)
-      .then((response) => response.arrayBuffer())
-      .then((arrayBuffer) => {
-        parseGeoRaster(arrayBuffer).then((georaster) => {
-          console.log(georaster);
-          // const min = georaster.mins[0]; // pega o min dinamico
-          // const range = georaster.ranges[0]; // pega o range dinamico
-          // TODO: FIX RANGE - min e max do potencial hidrico
-          const min = -7;
-          const range = 7;
-          // console.log(Chroma.brewer); // exibe escalas de cores pré prontas
-          const scale = Chroma.scale(this.newPalette());
-          const newLayer = new GeoRasterLayer({
-            georaster,
-            opacity: 0.9,
-            pixelValuesToColorFn: (pixelValues) => {
-              const pixelValue = pixelValues[0]; // só tem uma banda no georaster, então pega o [0]
-              // se o valor for 0, então não retorna uma cor
-              if (pixelValue === 0) {
-                return null;
-              }
-              // escala de 0 - 1 usado pelo chroma.js
-              const scaledPixelValue = (pixelValue - min) / range;
-              const color = scale(scaledPixelValue).hex();
-              return color;
-            },
-            resolution: 256, // optional parameter for adjusting display resolution
-          });
 
-          this.layersControl.overlays = {
-            ...this.layersControl.overlays,
-            campos: newLayer,
-          };
-          // TODO: criar uma layer com cada nome de campo que foi salvo
-          // desse jeito que ta hoje, quando cria um novo ele substitui o anterior
+    this.authService.getAuthData().then(
+      (data: any) => {
+        this.authData = data;
+        if (this.authData.fields.length > 0) {
+          this.campoList = this.authData.fields;
+          // TODO: verificar esse [0] aqui pra ver se nao ta pegando só o primeiro elemento
+          fetch(`${this.url}field/cut/${this.authData.fields[0].id}?date=16_04_2021`)
+            .then((response) => response.arrayBuffer())
+            .then((arrayBuffer) => {
+              parseGeoRaster(arrayBuffer).then((georaster) => {
+                console.log(georaster);
+                // const min = georaster.mins[0]; // pega o min dinamico
+                // const range = georaster.ranges[0]; // pega o range dinamico
+                // TODO: FIX RANGE - min e max do potencial hidrico
+                const min = -7;
+                const range = 7;
+                // console.log(Chroma.brewer); // exibe escalas de cores pré prontas
+                const scale = Chroma.scale(this.newPalette());
+                const newLayer = new GeoRasterLayer({
+                  georaster,
+                  opacity: 0.9,
+                  pixelValuesToColorFn: (pixelValues) => {
+                    const pixelValue = pixelValues[0]; // só tem uma banda no georaster, então pega o [0]
+                    // se o valor for 0, então não retorna uma cor
+                    if (pixelValue === 0) {
+                      return null;
+                    }
+                    // escala de 0 - 1 usado pelo chroma.js
+                    const scaledPixelValue = (pixelValue - min) / range;
+                    const color = scale(scaledPixelValue).hex();
+                    return color;
+                  },
+                  resolution: 256, // optional parameter for adjusting display resolution
+                });
 
-          this.map.addLayer(this.layersControl.overlays.campos);
-          // console.log(this.layersControl.overlays.campos);
+                this.layersControl.overlays = {
+                  ...this.layersControl.overlays,
+                  campos: newLayer,
+                };
+                // TODO: criar uma layer com cada nome de campo que foi salvo
+                // desse jeito que ta hoje, quando cria um novo ele substitui o anterior
 
-          this.getValuesOnClick(georaster);
-          this.createMapLegend();
-          this.map.fitBounds(newLayer.getBounds());
-          this.authService.campoControl.next(0);
-        });
-      });
-    // TODO: antes de salvar os campos, exibir, editar ou excluir campos selecionados
+                this.map.addLayer(this.layersControl.overlays.campos);
+                // console.log(this.layersControl.overlays.campos);
+
+                this.getValuesOnClick(georaster);
+                this.createMapLegend();
+                this.map.fitBounds(newLayer.getBounds());
+                this.authService.campoControl.next(0);
+              });
+            });
+          // TODO: antes de salvar os campos, exibir, editar ou excluir campos selecionados
+        } else {
+          console.log('USUARIO NAO TEM FIELD CADASTRADO');
+        }
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
   }
 
   newPalette() {
