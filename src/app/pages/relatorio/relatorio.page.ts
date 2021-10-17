@@ -118,7 +118,8 @@ export class RelatorioPage implements OnInit {
     this.fieldService.getDateOfGenerateMaps().then(
       (response: any) => {
         this.datasMapasGeoTiff = response.data.dates;
-      }, error => {
+      },
+      (error) => {
         console.log(error);
       }
     );
@@ -143,8 +144,12 @@ export class RelatorioPage implements OnInit {
           this.campoList = this.authData.fields;
           // TODO: ta mostrando só o tiff da primeira area da lista
           // tem que ver se vai mostrar de todas as áres do usuário ou só do q ele clicar
-          // meu deus do céu, arrumar essa gambiarra
-          fetch(`${this.url}field/cut/${this.authData.fields[0].id}?date=${dia > 10 ? dia : '0'+dia}_${mes + 1 > 10 ? mes + 1 : '0'+(mes+1)}_${ano}`)
+          // TODO: meu deus do céu, arrumar essa gambiarra
+          fetch(
+            `${this.url}field/cut/${this.authData.fields[0].id}?date=${
+              dia > 10 ? dia : '0' + dia
+            }_${mes + 1 > 10 ? mes + 1 : '0' + (mes + 1)}_${ano}`
+          )
             .then((response) => response.arrayBuffer())
             .then((arrayBuffer) => {
               parseGeoRaster(arrayBuffer).then((georaster) => {

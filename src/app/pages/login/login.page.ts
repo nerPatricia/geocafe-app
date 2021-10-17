@@ -42,7 +42,7 @@ export class LoginPage implements OnInit {
           async (responseFields: any) => {
             const authData = {
               ...response,
-              ...responseFields.data
+              geoJsonFields: responseFields.data.geojson
             };
             await this.authService.saveAuth(authData);
             this.authService.setAuthDataObservable();
