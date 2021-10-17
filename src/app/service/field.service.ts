@@ -32,4 +32,9 @@ export class FieldService {
     const url = this.url + 'field/cut/' + fieldId + '?date=05_05_2021';
     return this.http.get(url).toPromise();
   }
+
+  getDateOfGenerateMaps() {
+    const url = this.url + 'field/map/dates';
+    return this.http.get(url).toPromise();
+  }
 }

@@ -322,6 +322,7 @@ export class HomePage implements OnInit {
       (res: any) => {
         console.log(res);
         // TODO: verificar esse [0] aqui pra ver se nao ta pegando só o primeiro elemento
+        // update: sim, está pegando só o primeiro elemento
         fetch(`${this.url}field/cut/${res.data[0].id}?date=05_05_2021`)
           .then((response) => response.arrayBuffer())
           .then((arrayBuffer) => {
@@ -350,6 +351,7 @@ export class HomePage implements OnInit {
                 },
                 resolution: 256, // optional parameter for adjusting display resolution
               });
+              console.log(newLayer);
 
               this.layersControl.overlays = {
                 ...this.layersControl.overlays,
@@ -361,11 +363,11 @@ export class HomePage implements OnInit {
               this.map.addLayer(this.layersControl.overlays.campos);
               // console.log(this.layersControl.overlays.campos);
 
-              this.getValuesOnClick(georaster); // pega os valores de potencial hidrico no click
               this.createMapLegend(); // cria a lengenda no mapa
               this.map.fitBounds(newLayer.getBounds()); // trás a nova layer como prioritária
               this.atualizaFieldsAuthData(this.authData.user_id); // atualiza os campos do usuário em localStorage
               this.authService.campoControl.next(0); // volta a tela pra modo de exibição do mapa
+              this.getValuesOnClick(georaster); // pega os valores de potencial hidrico no click
             });
           });
       },
@@ -392,12 +394,15 @@ export class HomePage implements OnInit {
       const latlng = [element.latlng.lng, element.latlng.lat];
       // results is an array, which each item representing a separate band
       const results = Geoblaze.identify(georaster, latlng);
-      const popupContent =
-        '<p><b>Potencial Hídrico: </b>' + results + 'MPa</p>';
-      let popup = L.popup()
-        .setLatLng(new L.LatLng(element.latlng.lat, element.latlng.lng))
-        .setContent(popupContent)
-        .openOn(this.map);
+      // solução temporária issue #22
+      if (results != 0 && results !== null) {
+        const popupContent =
+          '<p><b>Potencial Hídrico: </b>' + results + 'MPa</p>';
+        let popup = L.popup()
+          .setLatLng(new L.LatLng(element.latlng.lat, element.latlng.lng))
+          .setContent(popupContent)
+          .openOn(this.map);
+      }
     });
   }
 

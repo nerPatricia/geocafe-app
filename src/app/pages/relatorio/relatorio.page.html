@@ -1,4 +1,14 @@
-<!-- <app-header *ngIf="campoControl == 2" title="cafe" [drawMode]="true" [drawMessage]="drawMessage"></app-header> -->
+<ion-header>
+  <ion-row>
+    <ion-col>
+      <ion-label>Datas</ion-label>
+      <ion-select placeholder="Selecione uma data" (ionChange)="getFields($event)">
+        <ion-select-option *ngFor="let data of datasMapasGeoTiff" [value]="data">{{data | date:'dd/MM/yyyy'}}
+        </ion-select-option>
+      </ion-select>
+    </ion-col>
+  </ion-row>
+</ion-header>
 
 <ion-content class="ion-no-padding">
   <ion-row class="fullscreen" [hidden]="!viewModeFlag">

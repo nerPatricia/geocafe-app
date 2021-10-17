@@ -22,6 +22,7 @@ export class RelatorioPage implements OnInit {
   url = environment.url;
   map: any;
   authData: any; // INFOS DO USUARIO LOGADO
+  datasMapasGeoTiff = []; // datas que foram gerados os mapas pelos satelites
   viewModeFlag = false;
   polygonDrawer; // OBJETO DO DESENHO NO MAPA
   selecionaAreaDoKML = false;
@@ -61,6 +62,8 @@ export class RelatorioPage implements OnInit {
     // this.polygonDrawer.disable();
     this.campoList = [];
     this.drawItems.clearLayers();
+
+    this.getDateMaps();
   }
 
   invalidateSize() {
@@ -90,7 +93,7 @@ export class RelatorioPage implements OnInit {
       },
     };
 
-    this.getFields();
+    // this.getFields();
   }
 
   ionViewDidEnter() {
@@ -111,29 +114,43 @@ export class RelatorioPage implements OnInit {
       });
   }
 
-  async getFields() {
+  getDateMaps() {
+    this.fieldService.getDateOfGenerateMaps().then(
+      (response: any) => {
+        this.datasMapasGeoTiff = response.data.dates;
+      }, error => {
+        console.log(error);
+      }
+    );
+  }
+
+  async getFields(event) {
+    console.log(event);
+    const ano = new Date(event.detail.value).getFullYear();
+    const mes = new Date(event.detail.value).getMonth();
+    const dia = new Date(event.detail.value).getDate();
     // VERIFICA SE O USUÁRIO POSSUI ALGUM FIELD
     // SE SIM, FAZ UM GET FIELD PELO ID PEGANDO O TIFF PELA DATA SELECIONADA
     // PASSAR POR TODOS OS FIELDS DO USUARIO
     // SE NÃO HOUVER ALGUM FIELD, RETORNAR UMA MSG
+
+    // LIMPAR O CAMPO ANTES DE ADICIONAR O NOVO TIFF SENÃO FICA POR CIMA
 
     this.authService.getAuthData().then(
       (data: any) => {
         this.authData = data;
         if (this.authData.fields.length > 0) {
           this.campoList = this.authData.fields;
-          // TODO: verificar esse [0] aqui pra ver se nao ta pegando só o primeiro elemento
-          fetch(`${this.url}field/cut/${this.authData.fields[0].id}?date=16_04_2021`)
+          // TODO: ta mostrando só o tiff da primeira area da lista
+          // tem que ver se vai mostrar de todas as áres do usuário ou só do q ele clicar
+          // meu deus do céu, arrumar essa gambiarra
+          fetch(`${this.url}field/cut/${this.authData.fields[0].id}?date=${dia > 10 ? dia : '0'+dia}_${mes + 1 > 10 ? mes + 1 : '0'+(mes+1)}_${ano}`)
             .then((response) => response.arrayBuffer())
             .then((arrayBuffer) => {
               parseGeoRaster(arrayBuffer).then((georaster) => {
                 console.log(georaster);
-                // const min = georaster.mins[0]; // pega o min dinamico
-                // const range = georaster.ranges[0]; // pega o range dinamico
-                // TODO: FIX RANGE - min e max do potencial hidrico
                 const min = -7;
                 const range = 7;
-                // console.log(Chroma.brewer); // exibe escalas de cores pré prontas
                 const scale = Chroma.scale(this.newPalette());
                 const newLayer = new GeoRasterLayer({
                   georaster,
@@ -160,7 +177,6 @@ export class RelatorioPage implements OnInit {
                 // desse jeito que ta hoje, quando cria um novo ele substitui o anterior
 
                 this.map.addLayer(this.layersControl.overlays.campos);
-                // console.log(this.layersControl.overlays.campos);
 
                 this.getValuesOnClick(georaster);
                 this.createMapLegend();

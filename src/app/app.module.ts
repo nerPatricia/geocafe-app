@@ -1,10 +1,15 @@
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { registerLocaleData } from '@angular/common';
+import localePt from '@angular/common/locales/pt';
+import '@angular/common/locales/global/pt';
+
+registerLocaleData(localePt, 'ptBr');
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -28,7 +33,11 @@ import { LeafletDrawModule } from '@asymmetrik/ngx-leaflet-draw';
   providers: [
     StatusBar,
     SplashScreen,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    {
+      provide: LOCALE_ID,
+      useValue: 'pt-BR',
+    }
   ],
   bootstrap: [AppComponent]
 })
