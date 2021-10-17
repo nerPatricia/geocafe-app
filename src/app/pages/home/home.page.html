@@ -1,4 +1,15 @@
 <app-header *ngIf="campoControl == 2" title="cafe" [drawMode]="true" [drawMessage]="drawMessage"></app-header>
+<ion-header *ngIf="authData?.geoJsonFields?.features?.length > 0 && (campoControl === 0 || !campoControl)">
+  <ion-row>
+    <ion-col>
+      <ion-label>Visualizar potencial hidrico por data</ion-label>
+      <ion-select placeholder="Selecione uma data" (ionChange)="getRasterFields($event)" #selectDateRaster>
+        <ion-select-option *ngFor="let data of datasMapasGeoTiff" [value]="data">{{data | date:'dd/MM/yyyy'}}
+        </ion-select-option>
+      </ion-select>
+    </ion-col>
+  </ion-row>
+</ion-header>
 
 <ion-content class="ion-no-padding">
   <ion-row class="fullscreen" [style.height]="campoControl > 1 ? '88%' : null" [hidden]="!viewModeFlag">

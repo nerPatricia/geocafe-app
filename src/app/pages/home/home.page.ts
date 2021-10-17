@@ -1,3 +1,4 @@
+import { element } from 'protractor';
 import { LoadingService } from './../../service/loading.service';
 import { environment } from './../../../environments/environment';
 import { FieldService } from './../../service/field.service';
@@ -7,7 +8,7 @@ import { Component, ViewChild, OnInit } from '@angular/core';
 import * as L from 'leaflet';
 import { kml } from '@tmcw/togeojson';
 import { LeafletDrawDirective } from '@asymmetrik/ngx-leaflet-draw';
-import { ModalController } from '@ionic/angular';
+import { IonSelect, ModalController } from '@ionic/angular';
 import parseGeoRaster from 'georaster';
 import GeoRasterLayer from 'georaster-layer-for-leaflet';
 import Chroma from 'chroma-js';
@@ -41,6 +42,9 @@ export class HomePage implements OnInit {
   );
   // Layer de dados geoJSON iniciada vazia
   kmlMaps = L.geoJSON(null, {});
+  // Layer de campos que o usuário tem salvo
+  meusMapas = L.geoJSON(null, {});
+  datasMapasGeoTiff = []; // datas que foram gerados os mapas pelos satelites
   layersControl;
   // Objeto das opções iniciais do mapa
   // pode ser utilizado tbm como bind no input leafletLayers
@@ -53,6 +57,7 @@ export class HomePage implements OnInit {
   // TODOS OS DESENHOS DE AREA SÃO SALVOS EM LAYER NO drawItems e no campoList
   drawItems: L.FeatureGroup = L.featureGroup();
   drawOptions;
+  @ViewChild('selectDateRaster', { static: false }) selectDateRaster: IonSelect;
   // TODO: botar essa variavel em algum outro lugar, ocupa muito espaço
   drawLocal = {
     draw: {
@@ -147,12 +152,14 @@ export class HomePage implements OnInit {
         this.selecionaAreaDoKML = true;
         this.verifyClickKMLArea();
       } else if (data === 0) {
-        this.polygonDrawer.disable();
+        if (this.polygonDrawer) {
+          this.polygonDrawer.disable();
+        }
         this.campoList = [];
-        this.drawItems.clearLayers();
       }
     });
 
+    this.getDateMaps();
     this.atualizaAuthData();
   }
 
@@ -167,6 +174,7 @@ export class HomePage implements OnInit {
   onMapReady(map) {
     this.map = map;
     console.log('ON MAP READY');
+    this.map.addLayer(this.layersControl.overlays.meus_mapas);
   }
 
   onDrawReady(drawControl?: L.Control.Draw) {
@@ -212,6 +220,7 @@ export class HomePage implements OnInit {
       },
       overlays: {
         KML_Map: this.kmlMaps,
+        meus_mapas: this.meusMapas
       },
     };
   }
@@ -219,10 +228,13 @@ export class HomePage implements OnInit {
   verifyClickKMLArea() {
     // trás a layer com o KML pra destaque no mapa
     this.map.addLayer(this.layersControl.overlays.KML_Map);
-
     this.kmlMaps.eachLayer((layers) => {
       layers.on('click', (layerClicada) => {
-        console.log(layerClicada);
+        if (this.campoControl !== 1) {
+          // para de pegar o evento no click
+          // TODO: parece que ta com bug aqui
+          this.map.originalEvent.preventDefault();
+        }
         this.presentModal('center-modal', {
           type: 'nomeCampoSelecionado',
           layer: layerClicada,
@@ -254,6 +266,9 @@ export class HomePage implements OnInit {
     this.authService.getAuthData().then(
       (data: any) => {
         this.authData = data;
+        if (this.authData.geoJsonFields) {
+          this.meusMapas.addData(this.authData.geoJsonFields);
+        }
       },
       (error) => {
         console.log('erro ao pegar dados do usuário');
@@ -264,7 +279,11 @@ export class HomePage implements OnInit {
   async atualizaFieldsAuthData(userId) {
     this.fieldService.getAllFieldsByUser(userId).then(
       async (responseFields: any) => {
-        this.authData.fields = responseFields.data.fields;
+        // TODO: vai mudar aqui se virar geojson
+        this.authData.geoJsonFields = responseFields.data.geojson;
+        if (this.authData.geoJsonFields) {
+          this.meusMapas.addData(this.authData.geoJsonFields);
+        }
         await this.authService.saveAuth(this.authData);
       },
       (error) => {
@@ -307,6 +326,75 @@ export class HomePage implements OnInit {
         featureGroup: this.drawItems,
       },
     };
+    console.log('set draw option');
+  }
+
+  getDateMaps() {
+    this.fieldService.getDateOfGenerateMaps().then(
+      (response: any) => {
+        this.datasMapasGeoTiff = response.data.dates;
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  }
+
+  async getRasterFields(event) {
+    const ano = new Date(event.detail.value).getFullYear();
+    const mes = new Date(event.detail.value).getMonth();
+    const dia = new Date(event.detail.value).getDate();
+
+    if (this.authData.geoJsonFields.features.length > 0) {
+      fetch(
+        `${this.url}field/cut/${this.authData.user_id}/${ // nesse fetch o parametro tem q ser o id do usuario
+          dia > 10 ? dia : '0' + dia
+        }_${mes + 1 > 10 ? mes + 1 : '0' + (mes + 1)}_${ano}`
+      )
+        .then((response: any) => response.arrayBuffer())
+        .then((arrayBuffer) => {
+          parseGeoRaster(arrayBuffer).then((georaster) => {
+            console.log(georaster);
+            // const min = georaster.mins[0]; // pega o min dinamico
+            // const range = georaster.ranges[0]; // pega o range dinamico
+            // TODO: FIX RANGE - min e max do potencial hidrico
+            const min = -7;
+            const range = 7;
+            // console.log(Chroma.brewer); // exibe escalas de cores pré prontas
+            const scale = Chroma.scale(this.newPalette());
+            const newLayer = new GeoRasterLayer({
+              georaster,
+              opacity: 0.9,
+              pixelValuesToColorFn: (pixelValues) => {
+                const pixelValue = pixelValues[0]; // só tem uma banda no georaster, então pega o [0]
+                // se o valor for 0, então não retorna uma cor
+                if (pixelValue === 0) {
+                  return null;
+                }
+                // escala de 0 - 1 usado pelo chroma.js
+                const scaledPixelValue = (pixelValue - min) / range;
+                const color = scale(scaledPixelValue).hex();
+                return color;
+              },
+              resolution: 256, // optional parameter for adjusting display resolution
+            });
+            console.log(newLayer);
+
+            this.layersControl.overlays = {
+              ...this.layersControl.overlays,
+              campos: newLayer
+            };
+            // TODO: criar uma layer com cada nome de campo que foi salvo
+            // desse jeito que ta hoje, quando cria um novo ele substitui o anterior
+
+            this.map.addLayer(this.layersControl.overlays.campos);
+
+            this.createMapLegend(); // cria a lengenda no mapa
+            this.map.fitBounds(newLayer.getBounds()); // trás a nova layer como prioritária
+            this.getValuesOnClick(georaster); // pega os valores de potencial hidrico no click
+          });
+        });
+    }
   }
 
   async save() {
@@ -315,61 +403,25 @@ export class HomePage implements OnInit {
     if (this.campoList.length === 0) {
       return;
     }
-
-    console.log(this.layersControl.overlays.campos);
-
     this.fieldService.saveField(this.campoList).then(
       (res: any) => {
         console.log(res);
-        // TODO: verificar esse [0] aqui pra ver se nao ta pegando só o primeiro elemento
-        // update: sim, está pegando só o primeiro elemento
-        fetch(`${this.url}field/cut/${res.data[0].id}?date=05_05_2021`)
-          .then((response) => response.arrayBuffer())
-          .then((arrayBuffer) => {
-            parseGeoRaster(arrayBuffer).then((georaster) => {
-              console.log(georaster);
-              // const min = georaster.mins[0]; // pega o min dinamico
-              // const range = georaster.ranges[0]; // pega o range dinamico
-              // TODO: FIX RANGE - min e max do potencial hidrico
-              const min = -7;
-              const range = 7;
-              // console.log(Chroma.brewer); // exibe escalas de cores pré prontas
-              const scale = Chroma.scale(this.newPalette());
-              const newLayer = new GeoRasterLayer({
-                georaster,
-                opacity: 0.9,
-                pixelValuesToColorFn: (pixelValues) => {
-                  const pixelValue = pixelValues[0]; // só tem uma banda no georaster, então pega o [0]
-                  // se o valor for 0, então não retorna uma cor
-                  if (pixelValue === 0) {
-                    return null;
-                  }
-                  // escala de 0 - 1 usado pelo chroma.js
-                  const scaledPixelValue = (pixelValue - min) / range;
-                  const color = scale(scaledPixelValue).hex();
-                  return color;
-                },
-                resolution: 256, // optional parameter for adjusting display resolution
-              });
-              console.log(newLayer);
-
-              this.layersControl.overlays = {
-                ...this.layersControl.overlays,
-                campos: newLayer,
-              };
-              // TODO: criar uma layer com cada nome de campo que foi salvo
-              // desse jeito que ta hoje, quando cria um novo ele substitui o anterior
-
-              this.map.addLayer(this.layersControl.overlays.campos);
-              // console.log(this.layersControl.overlays.campos);
-
-              this.createMapLegend(); // cria a lengenda no mapa
-              this.map.fitBounds(newLayer.getBounds()); // trás a nova layer como prioritária
-              this.atualizaFieldsAuthData(this.authData.user_id); // atualiza os campos do usuário em localStorage
-              this.authService.campoControl.next(0); // volta a tela pra modo de exibição do mapa
-              this.getValuesOnClick(georaster); // pega os valores de potencial hidrico no click
-            });
-          });
+        this.atualizaFieldsAuthData(this.authData.user_id); // atualiza os campos do usuário em localStorage
+        this.authService.campoControl.next(0); // volta a tela pra modo de exibição do mapa
+        this.layersControl.overlays = {
+          ...this.layersControl.overlays
+        };
+        // remove a layer que já tenham potencial hidrico
+        if (this.layersControl.overlays.campos) {
+          this.map.removeLayer(this.layersControl.overlays.campos);
+          delete this.layersControl.overlays.campos;
+        }
+        // depois que salvou, se a layer do kml inteiro tiver no mapa, remover
+        if (this.map.hasLayer(this.layersControl.overlays.KML_Map)) {
+          this.map.removeLayer(this.layersControl.overlays.KML_Map);
+        }
+        this.map.addLayer(this.meusMapas);
+        this.map.fitBounds(this.meusMapas.getBounds()); // trás a nova layer como prioritária
       },
       (error) => {
         console.log(error);

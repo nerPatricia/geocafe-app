@@ -27,10 +27,10 @@ export class FieldService {
     return this.http.get(url).toPromise();
   }
 
-  getFieldTiff(fieldId) {
-    fieldId = '606d1823bbf87d520d62e21a';
-    const url = this.url + 'field/cut/' + fieldId + '?date=05_05_2021';
-    return this.http.get(url).toPromise();
+  getRasterUserFields(userId, date) {
+    // const url = this.url + 'field/cut/' + fieldId + '?date=05_05_2021';
+    const url = this.url + 'field/cut';
+    return this.http.post(url, {user_id: userId, date}).toPromise();
   }
 
   getDateOfGenerateMaps() {
