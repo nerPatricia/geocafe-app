@@ -22,6 +22,7 @@ import Geoblaze from 'geoblaze';
 export class HomePage implements OnInit {
   url = environment.url;
   map: any;
+  legend: L.Control; // controla a legenda do raster no mapa
   authData: any; // TODO: definir uma interface aqui, são os dados do usuário logado salvos no localstorage
   viewModeFlag = false;
   drawMessage = 'Posicione um ponto para demarcar uma área.'; // msg no header enquanto o desenho da área é feito
@@ -220,7 +221,7 @@ export class HomePage implements OnInit {
       },
       overlays: {
         KML_Map: this.kmlMaps,
-        meus_mapas: this.meusMapas
+        meus_mapas: this.meusMapas,
       },
     };
   }
@@ -344,10 +345,12 @@ export class HomePage implements OnInit {
     const ano = new Date(event.detail.value).getFullYear();
     const mes = new Date(event.detail.value).getMonth();
     const dia = new Date(event.detail.value).getDate();
+    console.log(this.selectDateRaster.value);
 
     if (this.authData.geoJsonFields.features.length > 0) {
       fetch(
-        `${this.url}field/cut/${this.authData.user_id}/${ // nesse fetch o parametro tem q ser o id do usuario
+        `${this.url}field/cut/${this.authData.user_id}/${
+          // nesse fetch o parametro tem q ser o id do usuario
           dia > 10 ? dia : '0' + dia
         }_${mes + 1 > 10 ? mes + 1 : '0' + (mes + 1)}_${ano}`
       )
@@ -378,15 +381,17 @@ export class HomePage implements OnInit {
               },
               resolution: 256, // optional parameter for adjusting display resolution
             });
-            console.log(newLayer);
 
+            // remove a layer que já tenham potencial hidrico
+            if (this.layersControl.overlays.campos) {
+              this.map.removeLayer(this.layersControl.overlays.campos);
+              delete this.layersControl.overlays.campos;
+            }
+            // adiciona novas layers com o novo potencial hidrico
             this.layersControl.overlays = {
               ...this.layersControl.overlays,
-              campos: newLayer
+              campos: newLayer,
             };
-            // TODO: criar uma layer com cada nome de campo que foi salvo
-            // desse jeito que ta hoje, quando cria um novo ele substitui o anterior
-
             this.map.addLayer(this.layersControl.overlays.campos);
 
             this.createMapLegend(); // cria a lengenda no mapa
@@ -409,7 +414,7 @@ export class HomePage implements OnInit {
         this.atualizaFieldsAuthData(this.authData.user_id); // atualiza os campos do usuário em localStorage
         this.authService.campoControl.next(0); // volta a tela pra modo de exibição do mapa
         this.layersControl.overlays = {
-          ...this.layersControl.overlays
+          ...this.layersControl.overlays,
         };
         // remove a layer que já tenham potencial hidrico
         if (this.layersControl.overlays.campos) {
@@ -459,26 +464,27 @@ export class HomePage implements OnInit {
   }
 
   createMapLegend() {
-    const legend = new L.Control({ position: 'bottomright' });
+    if (!this.legend) {
+      this.legend = new L.Control({ position: 'bottomright' });
+      this.legend.onAdd = (map) => {
+        const div = L.DomUtil.create('div', 'info legend');
+        const grades = [-3.6, -2.5, -1.5, -0.5, 1.5];
+        const labels = [];
 
-    legend.onAdd = (map) => {
-      const div = L.DomUtil.create('div', 'info legend');
-      const grades = [-3.6, -2.5, -1.5, -0.5, 1.5];
-      const labels = [];
+        // loop through our density intervals and generate a label with a colored square for each interval
+        for (let i = 0; i < grades.length; i++) {
+          div.innerHTML +=
+            '<div style="height:20px; width:25px; text-align:center; background:' +
+            this.getColor(grades[i]) +
+            '">' +
+            grades[i] +
+            '</div> ';
+        }
+        return div;
+      };
 
-      // loop through our density intervals and generate a label with a colored square for each interval
-      for (let i = 0; i < grades.length; i++) {
-        div.innerHTML +=
-          '<div style="height:20px; width:25px; text-align:center; background:' +
-          this.getColor(grades[i]) +
-          '">' +
-          grades[i] +
-          '</div> ';
-      }
-      return div;
-    };
-
-    legend.addTo(this.map);
+      this.legend.addTo(this.map);
+    }
   }
 
   getColor(d) {
