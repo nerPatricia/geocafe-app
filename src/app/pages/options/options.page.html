@@ -13,6 +13,10 @@
 <ion-content>
   <!-- <p>Selecione a lista que deseja visualizar:</p> -->
   <ion-list lines="none">
+    <ion-item (click)="infosModal()">
+      <ion-icon slot="start" name="log-out-outline"></ion-icon>
+      <p>Informações do Projeto</p>
+    </ion-item>
     <ion-item (click)="logout()">
       <ion-icon slot="start" name="log-out-outline"></ion-icon>
       <p>Logout</p>

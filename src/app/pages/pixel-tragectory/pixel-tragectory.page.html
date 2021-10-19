@@ -1,0 +1,10 @@
+<ion-toolbar>
+  <ion-title class="ion-text-center titulo">TRAGETÓRIA DO PIXEL</ion-title>
+  <ion-buttons slot="start">
+    <ion-back-button defaultHref="/relatorio" (click)="fechar()"></ion-back-button>
+  </ion-buttons>
+</ion-toolbar>
+
+<ion-content>
+  <div [chart]="chart"></div>
+</ion-content>

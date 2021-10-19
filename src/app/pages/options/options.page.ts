@@ -1,6 +1,7 @@
 import { Router } from '@angular/router';
 import { AuthService } from './../../service/auth.service';
 import { Component } from '@angular/core';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-options',
@@ -10,13 +11,26 @@ import { Component } from '@angular/core';
 export class OptionsPage {
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    public alertController: AlertController
   ) {
     // this.route.queryParams.subscribe(params => {
     //   if (this.router.getCurrentNavigation().extras.state) {
     //     this.event = this.router.getCurrentNavigation().extras.state.event;
     //   }
     // });
+  }
+
+  async infosModal() {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: 'Informações do Projeto',
+      message: 'Yéni ve lintë yuldar avánier.<br>Sí man i yulman nin enquantuva?<br>'
+        + '<b>Sí man i yulman: </b>An sí Tintallë Varda Oiolossëo<br>',
+      buttons: ['OK']
+    });
+
+    await alert.present();
   }
 
   async logout() {
