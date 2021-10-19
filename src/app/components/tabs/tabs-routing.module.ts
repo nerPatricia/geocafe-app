@@ -21,7 +21,7 @@ const routes: Routes = [
       },
       {
         path: 'ajustes',
-        loadChildren: () => import('../../pages/home/home.module').then(m => m.HomePageModule)
+        loadChildren: () => import('../../pages/options/options.module').then(m => m.OptionsPageModule)
       },
       {
         path: 'home',

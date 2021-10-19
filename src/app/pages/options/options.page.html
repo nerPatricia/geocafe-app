@@ -1,0 +1,21 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      <span>CONFIGURAÇÕES</span>
+    </ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="home"></ion-back-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- <p>Selecione a lista que deseja visualizar:</p> -->
+  <ion-list lines="none">
+    <ion-item (click)="logout()">
+      <ion-icon slot="start" name="log-out-outline"></ion-icon>
+      <p>Logout</p>
+    </ion-item>
+  </ion-list>
+</ion-content>

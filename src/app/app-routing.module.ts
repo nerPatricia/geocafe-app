@@ -15,6 +15,10 @@ const routes: Routes = [
     loadChildren: () => import('./components/tabs/tabs.module').then(m => m.TabsPageModule)
   },
   {
+    path: 'options',
+    loadChildren: () => import('./components/tabs/tabs.module').then(m => m.TabsPageModule)
+  },
+  {
     path: 'register',
     loadChildren: './pages/register/register.module#RegisterPageModule'
   }
