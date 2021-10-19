@@ -63,8 +63,8 @@ export class TabsPage {
     this.campoControl = 0;
   }
 
-  logout() {
-    this.router.navigateByUrl('/');
-  }
+  // logout() {
+  //   this.router.navigateByUrl('/');
+  // }
 
 }
