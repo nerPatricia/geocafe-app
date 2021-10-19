@@ -17,6 +17,7 @@ const routes: Routes = [
       },
       {
         path: 'relatorios',
+        // loadChildren: () => import('../../pages/pixel-tragectory/pixel-tragectory.module').then(m => m.PixelTragectoryPageModule)
         loadChildren: () => import('../../pages/relatorio/relatorio.module').then(m => m.RelatorioPageModule)
       },
       {

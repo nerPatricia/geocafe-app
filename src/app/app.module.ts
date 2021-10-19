@@ -17,6 +17,8 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { IonicStorageModule } from '@ionic/storage';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { LeafletDrawModule } from '@asymmetrik/ngx-leaflet-draw';
+import { ChartModule } from 'angular-highcharts';
+import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -28,10 +30,12 @@ import { LeafletDrawModule } from '@asymmetrik/ngx-leaflet-draw';
     IonicModule.forRoot(),
     AppRoutingModule,
     LeafletModule,
-    LeafletDrawModule
+    LeafletDrawModule,
+    ChartModule,
   ],
   providers: [
     StatusBar,
+    ScreenOrientation,
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     {

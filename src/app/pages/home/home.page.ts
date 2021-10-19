@@ -1,4 +1,3 @@
-import { element } from 'protractor';
 import { LoadingService } from './../../service/loading.service';
 import { environment } from './../../../environments/environment';
 import { FieldService } from './../../service/field.service';
@@ -426,7 +425,7 @@ export class HomePage implements OnInit {
           this.map.removeLayer(this.layersControl.overlays.KML_Map);
         }
         this.map.addLayer(this.meusMapas);
-        this.map.fitBounds(this.meusMapas.getBounds()); // trás a nova layer como prioritária
+        // this.map.fitBounds(this.meusMapas.getBounds()); // trás a nova layer como prioritária
       },
       (error) => {
         console.log(error);
