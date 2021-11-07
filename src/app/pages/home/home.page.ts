@@ -35,6 +35,7 @@ export class HomePage implements OnInit {
     id: '',
     name: '',
     area: '',
+    dataPotencialHidrico: '',
     infos: {}
   };
   selecionaAreaDoKML = false;
@@ -382,6 +383,7 @@ export class HomePage implements OnInit {
     const mes = new Date(event.detail.value).getMonth();
     const dia = new Date(event.detail.value).getDate();
     const fullDate = `${dia > 10 ? dia : '0' + dia}_${mes + 1 > 10 ? mes + 1 : '0' + (mes + 1)}_${ano}`;
+    this.selectedPolygon.dataPotencialHidrico = new Date(ano, mes, dia, -3).toISOString().replace('.000Z', '');
 
     if (fieldData.id) {
       this.getPolygonInfos(fieldData, fullDate);
@@ -424,6 +426,7 @@ export class HomePage implements OnInit {
             this.selectedPolygon.id = fieldData.id;
             this.selectedPolygon.name = fieldData.name;
             this.selectedPolygon.area = fieldData.area;
+
             this.map.fitBounds(newLayer.getBounds()); // trás a nova layer como prioritária
             this.getValuesOnClick(georaster); // pega os valores de potencial hidrico no click
             this.verifica.detectChanges();

@@ -12,7 +12,7 @@
 </ion-header> -->
 
 <ion-content class="ion-no-padding">
-  <ion-row class="fullscreen" [style.height]="(campoControl > 1) || selectedPolygon.showGeotiff  ? '88%' : null"
+  <ion-row class="fullscreen" [style.height]="campoControl > 1  ? '88%' : selectedPolygon.showGeotiff ? '83%' : null"
     [hidden]="!viewModeFlag">
     <ion-col>
       <div leaflet [leafletOptions]="options" [leafletLayersControl]="layersControl"
@@ -50,7 +50,7 @@
   </ion-row>
   <!-- no if tem q verificar se está com algum geotiff adicionado -->
   <ion-row *ngIf="(campoControl == 0 || !campoControl) && selectedPolygon.showGeotiff"
-    style="height: 12%; background-color: white;">
+    style="height: 17%; background-color: white;">
     <ion-row class="box-polygon-info">
       <ion-col size="12">
         <p>
@@ -66,6 +66,16 @@
         <div style="background: #f3a20f;" class="legenda">-3</div>
         <div style="background: #f37d0f;" class="legenda">-4</div>
         <div style="background: #f30f0f;" class="legenda">-5</div>
+      </ion-col>
+      <ion-col size="12" style="display: flex; justify-content: center;">
+        <p style="align-self: center; padding-bottom: 3px;">Data de visualização do Potencial Hídrico:</p>
+        <ion-select class="select-data" placeholder="Selecione uma data"
+          [(ngModel)]="selectedPolygon.dataPotencialHidrico" (ionChange)="getRasterFields($event, selectedPolygon)"
+          #selectDateRaster>
+          <ion-select-option *ngFor="let data of datasMapasGeoTiff" [value]="data"
+            selected="selectedPolygon.dataPotencialHidrico">{{data | date:'dd/MM/yyyy'}}
+          </ion-select-option>
+        </ion-select>
       </ion-col>
     </ion-row>
   </ion-row>
