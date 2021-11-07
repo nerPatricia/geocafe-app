@@ -30,11 +30,16 @@ export class FieldService {
   getRasterUserFields(userId, date) {
     // const url = this.url + 'field/cut/' + fieldId + '?date=05_05_2021';
     const url = this.url + 'field/cut';
-    return this.http.post(url, {user_id: userId, date}).toPromise();
+    return this.http.post(url, { user_id: userId, date }).toPromise();
   }
 
   getDateOfGenerateMaps() {
     const url = this.url + 'field/map/dates';
     return this.http.get(url).toPromise();
+  }
+
+  getFieldInfos(fieldId, date) {
+    const url = this.url + 'field/info';
+    return this.http.post(url, {field_id: fieldId, date }).toPromise();
   }
 }
