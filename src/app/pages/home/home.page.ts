@@ -261,7 +261,9 @@ export class HomePage implements OnInit {
       console.log('meus mapas click');
       layers.on('click', async (layerClicada) => {
         console.log(layerClicada);
-        if (this.selectedPolygon.id !== layerClicada.target.feature.properties.id) {
+        const fieldLayersName = Object.keys(this.layersControl.overlays);
+        const indexEqualName = fieldLayersName.findIndex(element => element === layerClicada.target.feature.properties.name);
+        if (indexEqualName === -1) {
           this.presentSelectDateModal('center-modal', layerClicada.target.feature.properties);
         }
         if (this.campoControl !== 0 && this.campoControl) {
