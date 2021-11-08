@@ -1,8 +1,7 @@
+import { ToastService } from './../../service/toast.service';
 import { FieldService } from './../../service/field.service';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ModalController, NavController } from '@ionic/angular';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-select-date-modal',
@@ -12,12 +11,13 @@ import { Router } from '@angular/router';
 export class SelectDateModalComponent {
   @Input() props: any;
   datasMapasGeoTiff: [];
-  selectedDate: any;
+  selectedDate: any = null;
 
   constructor(
     public navCtrl: NavController,
     private modalCtrl: ModalController,
-    private fieldService: FieldService
+    private fieldService: FieldService,
+    private toastService: ToastService
   ) {
     this.getDateMaps();
   }
@@ -44,6 +44,10 @@ export class SelectDateModalComponent {
   }
 
   add() {
-    this.modalCtrl.dismiss({ event: this.selectedDate });
+    if (!this.selectedDate) {
+      this.toastService.present({ message: 'Selecione uma data para continuar' });
+    } else {
+      this.modalCtrl.dismiss({ event: this.selectedDate });
+    }
   }
 }
