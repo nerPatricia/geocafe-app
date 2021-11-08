@@ -83,6 +83,15 @@ ion-content {
     margin-top: auto;
 }
 
+.alert-class .alert-wrapper {
+    height: 85%;
+    max-width: 80%;
+
+    .alert-message {
+        max-height: 80%;
+    }
+}
+
 // estilo de modal que fica no centro da tela
 // modal pequeno
 .center-modal .modal-wrapper {
