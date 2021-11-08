@@ -52,7 +52,10 @@
   <ion-row *ngIf="(campoControl == 0 || !campoControl) && selectedPolygon.showGeotiff"
     style="height: 17%; background-color: white;">
     <ion-row class="box-polygon-info">
-      <ion-col size="12">
+      <ion-col size="1" style="font-size: x-large;">
+        <ion-icon (click)="showFieldOptions()" name="settings-outline" style="margin-left: 10px;"></ion-icon>
+      </ion-col>
+      <ion-col size="11">
         <p>
           <strong>Nome:&nbsp;</strong>{{ selectedPolygon.name }}&nbsp;<strong>Área:&nbsp;</strong>{{ selectedPolygon.area?.toFixed(2) }}m²&nbsp;<strong>Média
             do índice:&nbsp;</strong>{{ selectedPolygon.infos.mean?.toFixed(2) }}</p>
@@ -80,3 +83,10 @@
     </ion-row>
   </ion-row>
 </ion-content>
+
+<!--// azul - #00d0ff - valores maiores que -0,1
+    // verde - #49d402 - valores de -0.1 até -1
+    // amarelo - #f3ec0f - valores de -1 até -2
+    // laranja - #f3a20f - valores de -2 até -3
+    // laranja avermelhado - #f37d0f - valores de -3 até -4
+    // vermelho - #f30f0f - valores de -4 até -5 (ou menores) -->

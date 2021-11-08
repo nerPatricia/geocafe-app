@@ -1,3 +1,4 @@
+import { ToastService } from './../../service/toast.service';
 import { SelectDateModalComponent } from './select-date-modal';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
@@ -11,6 +12,7 @@ import { IonicModule } from '@ionic/angular';
     FormsModule,
     ReactiveFormsModule
   ],
+  providers: [ToastService],
   declarations: [SelectDateModalComponent],
   exports: [SelectDateModalComponent]
 })

@@ -16,6 +16,11 @@ export class FieldService {
     return this.http.post(url, fieldData).toPromise();
   }
 
+  deleteField(fieldId) {
+    const url = this.url + 'field/' + fieldId;
+    return this.http.delete(url).toPromise();
+  }
+
   getAllFieldsByUser(userId) {
     const url = this.url + 'field/?user_id=' + userId;
     return this.http.get(url).toPromise();

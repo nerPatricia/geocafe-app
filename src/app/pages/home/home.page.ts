@@ -1,3 +1,4 @@
+import swal from 'sweetalert2';
 import { SelectDateModalComponent } from './../../components/select-date-modal/select-date-modal';
 import { LoadingService } from './../../service/loading.service';
 import { environment } from './../../../environments/environment';
@@ -8,7 +9,11 @@ import { Component, ViewChild, OnInit, ChangeDetectorRef } from '@angular/core';
 import * as L from 'leaflet';
 import { kml } from '@tmcw/togeojson';
 import { LeafletDrawDirective } from '@asymmetrik/ngx-leaflet-draw';
-import { IonSelect, ModalController } from '@ionic/angular';
+import {
+  IonSelect,
+  ModalController,
+  ActionSheetController,
+} from '@ionic/angular';
 import parseGeoRaster from 'georaster';
 import GeoRasterLayer from 'georaster-layer-for-leaflet';
 import Chroma from 'chroma-js';
@@ -36,7 +41,7 @@ export class HomePage implements OnInit {
     name: '',
     area: '',
     dataPotencialHidrico: '',
-    infos: {}
+    infos: {},
   };
   selecionaAreaDoKML = false;
   campoList = []; // lista de áreas de desenho completo
@@ -147,7 +152,8 @@ export class HomePage implements OnInit {
     private modalCtrl: ModalController,
     private fieldService: FieldService,
     private loading: LoadingService,
-    private verifica: ChangeDetectorRef
+    private verifica: ChangeDetectorRef,
+    private actionSheetCtrl: ActionSheetController
   ) {
     // O CONTROLE DE ESTADO DO MAPA É FEITO POR ESSE CAMPOCONTROL
     // 0 - apenas exibição do mapa; 1 - tela de seleção de area que ja existe; 2 - inicializa um novo campo (novo draw)
@@ -259,13 +265,16 @@ export class HomePage implements OnInit {
     // trás a layer com os meus mapas pra destaque no mapa
     this.map.addLayer(this.layersControl.overlays.meus_mapas);
     this.meusMapas.eachLayer((layers) => {
-      console.log('meus mapas click');
       layers.on('click', async (layerClicada) => {
-        console.log(layerClicada);
         const fieldLayersName = Object.keys(this.layersControl.overlays);
-        const indexEqualName = fieldLayersName.findIndex(element => element === layerClicada.target.feature.properties.name);
+        const indexEqualName = fieldLayersName.findIndex(
+          (element) => element === layerClicada.target.feature.properties.name
+        );
         if (indexEqualName === -1) {
-          this.presentSelectDateModal('center-modal', layerClicada.target.feature.properties);
+          this.presentSelectDateModal(
+            'maior-center-modal',
+            layerClicada.target.feature.properties
+          );
         }
         if (this.campoControl !== 0 && this.campoControl) {
           // para de pegar o evento no click
@@ -310,16 +319,23 @@ export class HomePage implements OnInit {
     );
   }
 
-  async atualizaFieldsAuthData(userId) {
+  async atualizaFieldsAuthData(userId, isDelete?) {
     this.fieldService.getAllFieldsByUser(userId).then(
       async (responseFields: any) => {
         // TODO: vai mudar aqui se virar geojson
         this.authData.geoJsonFields = responseFields.data.geojson;
         console.log(this.authData.geoJsonFields);
         if (this.authData.geoJsonFields) {
-          this.meusMapas.addData(this.authData.geoJsonFields);
+          if (isDelete) {
+            this.map.removeLayer(this.meusMapas);
+            this.meusMapas = L.geoJSON(null, {});
+            this.meusMapas.addData(this.authData.geoJsonFields);
+            this.layersControl.overlays.meus_mapas = this.meusMapas;
+            this.map.addLayer(this.meusMapas);
+          } else {
+            this.meusMapas.addData(this.authData.geoJsonFields);
+          }
           console.log('atualiza fields meus mapas');
-          console.log(this.meusMapas);
           this.selectPolygon();
         }
         await this.authService.saveAuth(this.authData);
@@ -382,15 +398,17 @@ export class HomePage implements OnInit {
     const ano = new Date(event.detail.value).getFullYear();
     const mes = new Date(event.detail.value).getMonth();
     const dia = new Date(event.detail.value).getDate();
-    const fullDate = `${dia > 10 ? dia : '0' + dia}_${mes + 1 > 10 ? mes + 1 : '0' + (mes + 1)}_${ano}`;
-    this.selectedPolygon.dataPotencialHidrico = new Date(ano, mes, dia, -3).toISOString().replace('.000Z', '');
+    const fullDate = `${dia > 10 ? dia : '0' + dia}_${
+      mes + 1 > 10 ? mes + 1 : '0' + (mes + 1)
+    }_${ano}`;
+    this.selectedPolygon.dataPotencialHidrico = new Date(ano, mes, dia, -3)
+      .toISOString()
+      .replace('.000Z', '');
 
     if (fieldData.id) {
       this.getPolygonInfos(fieldData, fullDate);
 
-      fetch(
-        `${this.url}field/cut/${fieldData.id}/${fullDate}`
-      )
+      fetch(`${this.url}field/cut/${fieldData.id}/${fullDate}`)
         .then((response: any) => response.arrayBuffer())
         .then((arrayBuffer) => {
           parseGeoRaster(arrayBuffer).then((georaster) => {
@@ -440,7 +458,8 @@ export class HomePage implements OnInit {
       (response: any) => {
         this.selectedPolygon.infos = response.data;
         this.verifica.detectChanges();
-      }, error => {
+      },
+      (error) => {
         console.log(error);
       }
     );
@@ -474,16 +493,6 @@ export class HomePage implements OnInit {
     // TODO: antes de salvar os campos, exibir, editar ou excluir campos selecionados
   }
 
-  newPalette() {
-    return Chroma.scale([
-      '#f30f0f',
-      '#f5530e',
-      '#f6780d',
-      '#f7970d',
-      '#00d0ff',
-    ]);
-  }
-
   getValuesOnClick(georaster) {
     // pega os valores do pixel do georaster no click
     this.map.on('click', (element) => {
@@ -502,50 +511,31 @@ export class HomePage implements OnInit {
     });
   }
 
-  createMapLegend() {
-    if (!this.legend) {
-      this.legend = new L.Control({ position: 'bottomright' });
-      this.legend.onAdd = (map) => {
-        const div = L.DomUtil.create('div', 'info legend');
-        const grades = [-5, -4, -3, -2, -1, 0];
-        const labels = [];
-
-        // loop through our density intervals and generate a label with a colored square for each interval
-        for (let i = 0; i < grades.length; i++) {
-          div.innerHTML +=
-            '<div style="height:20px; width:25px; text-align:center; background:' +
-            this.getColor(grades[i]) +
-            '">' +
-            grades[i] +
-            '</div> ';
-        }
-        return div;
-      };
-
-      this.legend.addTo(this.map);
-    }
+  newPalette() {
+    return Chroma.scale([
+      '#f30f0f',
+      '#f5530e',
+      '#f6780d',
+      '#f7970d',
+      '#00d0ff',
+    ]);
   }
 
-  getColor(d) {
-    // azul - #00d0ff - valores maiores que -0,1
-    // verde - #49d402 - valores de -0.1 até -1
-    // amarelo - #f3ec0f - valores de -1 até -2
-    // laranja - #f3a20f - valores de -2 até -3
-    // laranja avermelhado - #f37d0f - valores de -3 até -4
-    // vermelho - #f30f0f - valores de -4 até -5 (ou menores)
-    return d > -0.1
-      ? '#00d0ff'
-      : d <= -0.1 && d >= -1
-      ? '#49d402'
-      : d < -1 && d >= -2
-      ? '#f3ec0f'
-      : d < -2 && d >= -3
-      ? '#f3a20f'
-      : d < -3 && d >= -4
-      ? '#f37d0f'
-      : d < -4
-      ? '#f30f0f'
-      : '#fff';
+  async deleteSelectedField() {
+    this.fieldService.deleteField(this.selectedPolygon.id).then(
+      (response) => {
+        // se deletou da base de dados, tem que atualizar os campos do usuario
+        // e tem tbm que apagar a layer com potencial hidrico referente ao campo (se tiver uma)
+        this.atualizaFieldsAuthData(this.authData.user_id, true);
+        this.map.removeLayer(
+          this.layersControl.overlays[this.selectedPolygon.name]
+        );
+        delete this.layersControl.overlays[this.selectedPolygon.name];
+      },
+      async (error) => {
+        console.log(error);
+      }
+    );
   }
 
   async presentModal(cssClass = 'default', props?: any) {
@@ -598,5 +588,33 @@ export class HomePage implements OnInit {
     });
 
     return await modal.present();
+  }
+
+  async showFieldOptions() {
+    const actionSheet = await this.actionSheetCtrl.create({
+      header: 'Opções do campo:',
+      buttons: [
+        {
+          text: 'Apagar campo',
+          icon: 'trash-outline',
+          handler: async () => {
+            swal
+              .fire({
+                title: 'Apagar campo',
+                text: 'Deseja mesmo apagar o campo selecionado? Essa ação não pode ser revertida.',
+                showDenyButton: true,
+                confirmButtonText: 'Confirmar',
+                denyButtonText: 'Cancelar',
+              })
+              .then((result) => {
+                if (result.isConfirmed) {
+                  this.deleteSelectedField();
+                }
+              });
+          },
+        },
+      ],
+    });
+    await actionSheet.present();
   }
 }
