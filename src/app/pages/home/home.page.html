@@ -1,5 +1,5 @@
 <app-header *ngIf="campoControl == 2" title="cafe" [drawMode]="true" [drawMessage]="drawMessage"></app-header>
-<ion-header *ngIf="authData?.geoJsonFields?.features?.length > 0 && (campoControl === 0 || !campoControl)">
+<!-- <ion-header *ngIf="authData?.geoJsonFields?.features?.length > 0 && (campoControl === 0 || !campoControl)">
   <ion-row>
     <ion-col>
       <ion-label>Visualizar potencial hidrico por data</ion-label>
@@ -9,10 +9,11 @@
       </ion-select>
     </ion-col>
   </ion-row>
-</ion-header>
+</ion-header> -->
 
 <ion-content class="ion-no-padding">
-  <ion-row class="fullscreen" [style.height]="campoControl > 1 ? '88%' : null" [hidden]="!viewModeFlag">
+  <ion-row class="fullscreen" [style.height]="campoControl > 1  ? '88%' : selectedPolygon.showGeotiff ? '83%' : null"
+    [hidden]="!viewModeFlag">
     <ion-col>
       <div leaflet [leafletOptions]="options" [leafletLayersControl]="layersControl"
         (leafletMapReady)="onMapReady($event)">
@@ -44,6 +45,37 @@
       <ion-col size="12" *ngIf="campoList.length === 0 || campoControl === 2" style="text-align: center;">
         <p class="alerta">
           Termine a edição para salvar o campo ou adicionar um novo.</p>
+      </ion-col>
+    </ion-row>
+  </ion-row>
+  <!-- no if tem q verificar se está com algum geotiff adicionado -->
+  <ion-row *ngIf="(campoControl == 0 || !campoControl) && selectedPolygon.showGeotiff"
+    style="height: 17%; background-color: white;">
+    <ion-row class="box-polygon-info">
+      <ion-col size="12">
+        <p>
+          <strong>Nome:&nbsp;</strong>{{ selectedPolygon.name }}&nbsp;<strong>Área:&nbsp;</strong>{{ selectedPolygon.area?.toFixed(2) }}m²&nbsp;<strong>Média
+            do índice:&nbsp;</strong>{{ selectedPolygon.infos.mean?.toFixed(2) }}</p>
+        <p><strong>Índice mínimo:&nbsp;</strong>{{ selectedPolygon.infos.min?.toFixed(2) }}&nbsp;<strong>Índice
+            máximo:&nbsp;</strong>{{ selectedPolygon.infos.max?.toFixed(2) }}</p>
+      </ion-col>
+      <ion-col size="12" style="display: flex; justify-content: center;">
+        <div style="background: #00d0ff;" class="legenda">0</div>
+        <div style="background: #49d402;" class="legenda">-1</div>
+        <div style="background: #f3ec0f;" class="legenda">-2</div>
+        <div style="background: #f3a20f;" class="legenda">-3</div>
+        <div style="background: #f37d0f;" class="legenda">-4</div>
+        <div style="background: #f30f0f;" class="legenda">-5</div>
+      </ion-col>
+      <ion-col size="12" style="display: flex; justify-content: center;">
+        <p style="align-self: center; padding-bottom: 3px;">Data de visualização do Potencial Hídrico:</p>
+        <ion-select class="select-data" placeholder="Selecione uma data"
+          [(ngModel)]="selectedPolygon.dataPotencialHidrico" (ionChange)="getRasterFields($event, selectedPolygon)"
+          #selectDateRaster>
+          <ion-select-option *ngFor="let data of datasMapasGeoTiff" [value]="data"
+            selected="selectedPolygon.dataPotencialHidrico">{{data | date:'dd/MM/yyyy'}}
+          </ion-select-option>
+        </ion-select>
       </ion-col>
     </ion-row>
   </ion-row>
