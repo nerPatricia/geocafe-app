@@ -501,8 +501,9 @@ export class HomePage implements OnInit {
       const results = Geoblaze.identify(georaster, latlng);
       // solução temporária issue #22
       if (results != 0 && results !== null) {
+        console.log(results);
         const popupContent =
-          '<p><b>Potencial Hídrico: </b>' + results + 'MPa</p>';
+          '<p><b>Potencial Hídrico: </b>' + results[0].toFixed(2) + 'MPa</p>';
         let popup = L.popup()
           .setLatLng(new L.LatLng(element.latlng.lat, element.latlng.lng))
           .setContent(popupContent)
