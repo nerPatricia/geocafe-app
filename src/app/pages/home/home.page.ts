@@ -65,7 +65,7 @@ export class HomePage implements OnInit {
   options = {
     layers: [this.sateliteMap],
     zoom: 14,
-    center: L.latLng([-21.3726284, -45.5167047]),
+    center: L.latLng([-20.9471382, -44.9198533]), // -21.3726284, -45.5167047
   };
   // Objetos usados pra desenhar os campos e configurar labels
   // TODOS OS DESENHOS DE AREA SÃO SALVOS EM LAYER NO drawItems e no campoList
@@ -291,7 +291,7 @@ export class HomePage implements OnInit {
 
   // Transforma o KML de três pontas em geoJSON e adiciona na layer
   loadGeoJson() {
-    fetch('../../../assets/maps/areaCafeeiraTresPontas.kml')
+    fetch('../../../assets/maps/areasCafeeirasSantoAntonioAmparo.kml')
       .then((response) => {
         return response.text();
       })
@@ -473,7 +473,10 @@ export class HomePage implements OnInit {
     }
     this.fieldService.saveField(this.campoList).then(
       (res: any) => {
-        console.log(res);
+        if (!res.success) {
+          swal.fire('Atenção!', 'Campos devem possuir nomes únicos. Tente novamente.', 'error');
+          return;
+        }
         this.atualizaFieldsAuthData(this.authData.user_id); // atualiza os campos do usuário em localStorage
         this.authService.campoControl.next(0); // volta a tela pra modo de exibição do mapa
         this.layersControl.overlays = {
