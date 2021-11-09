@@ -29,7 +29,7 @@ export class RelatorioPage implements OnInit {
   options = {
     layers: [this.sateliteMap],
     zoom: 14,
-    center: L.latLng([-21.3726284, -45.5167047]),
+    center: L.latLng([-20.9471382, -44.9198533]),
   };
 
   constructor(
@@ -90,7 +90,7 @@ export class RelatorioPage implements OnInit {
   async presentAlert(lat, long) {
     const alert = await this.alertController.create({
       header: 'Tragetória do Pixel Selecionado',
-      message: `Deseja visualizar a tragetória do pixel de latitude ${lat} e longitude ${long}?`,
+      message: `Deseja visualizar a tragetória do pixel de latitude ${lat.toFixed(7)} e longitude ${long.toFixed(7)}?`,
       buttons: [
         {
           text: 'Não',

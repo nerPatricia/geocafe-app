@@ -22,6 +22,7 @@ export class CampoModalComponent {
   ) {}
 
   ionViewDidEnter() {
+    console.log("modal");
     if (this.props.campoList) {
       this.nomeCampo.setValue('Campo ' + (this.props.campoList.length + 1));
     }
