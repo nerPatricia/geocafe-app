@@ -53,7 +53,7 @@ export class PixelTragectoryPage implements OnInit {
       .then(
         (response: any) => {
           response.data.forEach(element => {
-            this.mesesPixel.push(element.date);
+            this.mesesPixel.push(element.f_date);
             this.valuesPixel.push(element.value);
           });
           this.gerarGrafico();
@@ -70,7 +70,7 @@ export class PixelTragectoryPage implements OnInit {
         type: 'line',
       },
       title: {
-        text: `lat: ${this.latLong.lat}, long: ${this.latLong.long}`,
+        text: `lat: ${this.latLong.lat.toFixed(7)}, long: ${this.latLong.long.toFixed(7)}`,
       },
       credits: {
         enabled: false,

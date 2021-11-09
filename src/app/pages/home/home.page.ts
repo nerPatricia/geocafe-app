@@ -65,8 +65,9 @@ export class HomePage implements OnInit {
   options = {
     layers: [this.sateliteMap],
     zoom: 14,
-    center: L.latLng([-20.9471382, -44.9198533]), // -21.3726284, -45.5167047
+    center: L.latLng([-20.9471382, -44.9198533]), // tres pontas -21.3726284, -45.5167047
   };
+  // santo antonio do amparo -20.9471382, -44.9198533
   // Objetos usados pra desenhar os campos e configurar labels
   // TODOS OS DESENHOS DE AREA SÃO SALVOS EM LAYER NO drawItems e no campoList
   drawItems: L.FeatureGroup = L.featureGroup();
@@ -162,6 +163,7 @@ export class HomePage implements OnInit {
       console.log('SUBSCRIBE: ', data);
       this.campoControl = data;
       if (data === 2) {
+        this.drawItems.clearLayers();
         this.setDrawOption();
       } else if (data === 1) {
         this.setDrawOption();
@@ -172,6 +174,9 @@ export class HomePage implements OnInit {
           this.polygonDrawer.disable();
         }
         this.campoList = [];
+        this.kmlMaps.eachLayer((layers) => {
+          layers.off('click');
+        });
       }
     });
 
@@ -243,10 +248,12 @@ export class HomePage implements OnInit {
 
   verifyClickKMLArea() {
     // trás a layer com o KML pra destaque no mapa
-    this.map.addLayer(this.layersControl.overlays.KML_Map);
+    if (!this.map.hasLayer(this.layersControl.overlays.KML_Map)) {
+      this.map.addLayer(this.layersControl.overlays.KML_Map);
+    }
     this.kmlMaps.eachLayer((layers) => {
       layers.on('click', (layerClicada) => {
-        if (this.campoControl !== 1) {
+        if (this.campoControl !== 1 && !this.selecionaAreaDoKML) {
           // para de pegar o evento no click
           // TODO: parece que ta com bug aqui
           this.map.originalEvent.preventDefault();
@@ -266,6 +273,9 @@ export class HomePage implements OnInit {
     this.map.addLayer(this.layersControl.overlays.meus_mapas);
     this.meusMapas.eachLayer((layers) => {
       layers.on('click', async (layerClicada) => {
+        if (this.selecionaAreaDoKML) {
+          return;
+        }
         const fieldLayersName = Object.keys(this.layersControl.overlays);
         const indexEqualName = fieldLayersName.findIndex(
           (element) => element === layerClicada.target.feature.properties.name
@@ -474,7 +484,11 @@ export class HomePage implements OnInit {
     this.fieldService.saveField(this.campoList).then(
       (res: any) => {
         if (!res.success) {
-          swal.fire('Atenção!', 'Campos devem possuir nomes únicos. Tente novamente.', 'error');
+          swal.fire(
+            'Atenção!',
+            'Campos devem possuir nomes únicos. Tente novamente.',
+            'error'
+          );
           return;
         }
         this.atualizaFieldsAuthData(this.authData.user_id); // atualiza os campos do usuário em localStorage
@@ -560,13 +574,20 @@ export class HomePage implements OnInit {
           } else {
             innerLayer = props.layer;
           }
+          console.log(innerLayer);
           const infoCampo = {
-            coordinates: innerLayer._latlngs[0],
+            coordinates: innerLayer._latlngs
+              ? innerLayer._latlngs[0]
+              : innerLayer.target._latlngs[0],
             name: retorno.nomeCampo,
             user_id: this.authData ? this.authData.user_id : '0',
           };
           this.campoList.push(infoCampo);
-          this.drawItems.addLayer(innerLayer);
+          if (innerLayer.target) {
+            this.drawItems.addLayer(innerLayer.target);
+          } else {
+            this.drawItems.addLayer(innerLayer);
+          }
           // SE CRIOU UM POLIGONO VALIDO, ENTÃO SETA O CONTROLE PRA MODO 3
           // VAI LIBERAR OS BOTÕES DE SALVAR E ADICIONAR
           this.authService.campoControl.next(3);
