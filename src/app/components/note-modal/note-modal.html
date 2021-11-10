@@ -1,0 +1,26 @@
+<ion-toolbar>
+  <ion-title class="ion-text-center titulo">Informações da Nota</ion-title>
+</ion-toolbar>
+
+<ion-list lines="none">
+  <ion-label>Nome do campo: {{ props.name }}</ion-label>
+  <br>
+  <br>
+  <ion-label>Texto da nota</ion-label>
+  <ion-textarea rows="6" [formControl]="note"></ion-textarea>
+</ion-list>
+
+<!-- TODO: antes de salvar os campos, exibir, editar ou excluir campos selecionados -->
+
+<ion-row class="justify">
+  <ion-col size="5">
+    <button class="btn btn-sucess btn-cancel" (click)="cancel()" ion-button expand="block">
+      Cancelar
+    </button>
+  </ion-col>
+  <ion-col size="5" class="ion-text-center">
+    <button class="btn btn-sucess" (click)="add()" ion-button expand="block">
+      Adicionar
+    </button>
+  </ion-col>
+</ion-row>

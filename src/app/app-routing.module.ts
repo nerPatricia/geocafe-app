@@ -11,11 +11,15 @@ const routes: Routes = [
     loadChildren: () => import('./components/tabs/tabs.module').then(m => m.TabsPageModule)
   },
   {
-    path: 'relatorio',
+    path: 'report',
     loadChildren: () => import('./components/tabs/tabs.module').then(m => m.TabsPageModule)
   },
   {
     path: 'options',
+    loadChildren: () => import('./components/tabs/tabs.module').then(m => m.TabsPageModule)
+  },
+  {
+    path: 'field-note',
     loadChildren: () => import('./components/tabs/tabs.module').then(m => m.TabsPageModule)
   },
   {

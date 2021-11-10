@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      <span>NOTAS</span>
+    </ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="home"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" style="--background: #fbfbfb;">
+  <ion-grid>
+    <ion-row style="justify-content: center; padding-bottom: 1em; margin-left: 1.5em;">
+      <ion-col size="6" class="dash-card" (click)="addNote()">
+        <span>NOVA ANOTAÇÃO</span>
+        <ion-icon id="add" name="add-circle"></ion-icon>
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="notesData.length > 0" style="justify-content: center;">
+      <ion-col size="11" class="dash-card note-card" *ngFor="let note of notesData">
+        <span class="title">Campo: {{ note.name }}</span>
+        <div class="text-note" *ngFor="let text of note.notes; index as i">
+          <br />
+          <span>Nota {{i+1}}: {{ text.text }}</span>
+          <ion-icon name="ellipsis-vertical" (click)="noteOptions(note, text)"></ion-icon>
+          <br />
+        </div>
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="notesData.length == 0" style="justify-content: center;">
+      <p class="sem-info">Não há notas cadastradas.</p>
+    </ion-row>
+
+  </ion-grid>
+</ion-content>

@@ -1,0 +1,12 @@
+<app-header title="cafe" [showButtonBack]="'/home'" [drawMode]="false"
+  [drawMessage]="'Selecione um campo para adicionar a nota'" [fsize]="'12px'"></app-header>
+
+<ion-content class="ion-no-padding">
+  <ion-row class="fullscreen" [hidden]="!viewModeFlag">
+    <ion-col>
+      <div leaflet [leafletOptions]="options" [leafletLayersControl]="layersControl"
+        (leafletMapReady)="onMapReady($event)">
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-content>

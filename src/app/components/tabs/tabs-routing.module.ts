@@ -13,16 +13,19 @@ const routes: Routes = [
       },
       {
         path: 'notas',
-        loadChildren: () => import('../../pages/home/home.module').then(m => m.HomePageModule)
+        loadChildren: () => import('../../pages/notes/notes.module').then(m => m.NotesPageModule)
       },
       {
         path: 'relatorios',
-        // loadChildren: () => import('../../pages/pixel-tragectory/pixel-tragectory.module').then(m => m.PixelTragectoryPageModule)
-        loadChildren: () => import('../../pages/relatorio/relatorio.module').then(m => m.RelatorioPageModule)
+        loadChildren: () => import('../../pages/report/report.module').then(m => m.ReportPageModule)
       },
       {
         path: 'ajustes',
         loadChildren: () => import('../../pages/options/options.module').then(m => m.OptionsPageModule)
+      },
+      {
+        path: 'field-note',
+        loadChildren: () => import('../../pages/field-note/field-note.module').then(m => m.FieldNotePageModule)
       },
       {
         path: 'home',
