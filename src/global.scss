@@ -110,6 +110,15 @@ ion-content {
     display: block;
 }
 
+// estilo de modal que fica no centro da tela
+// modal de adicionar nota
+.note-center-modal .modal-wrapper {
+    height: 48%;
+    margin: 20px;
+    border-radius: 20px;
+    display: block;
+}
+
 // deixa o backdrop do modal transparente
 // .sc-ion-modal-md-h:first-of-type {
 //     --backdrop-opacity: 0;

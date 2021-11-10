@@ -12,9 +12,13 @@ import Swal from 'sweetalert2';
 })
 export class LoginPage implements OnInit {
   userData: any = {
-   email: 'patricia@mail.com',
-   password: '123456'
+     email: '',
+     password: ''
   };
+  // userData: any = {
+  //  email: 'patricia@mail.com',
+  //  password: '123456'
+  // };
   showPassword = false;
 
   constructor(

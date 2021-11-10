@@ -17,6 +17,8 @@ export class AppHeaderComponent {
   drawMode = false;
   @Input()
   iconTitle: string = '';
+  @Input()
+  fsize: null;
 
   @Output()
   public eventEmitter: EventEmitter<any> = new EventEmitter();

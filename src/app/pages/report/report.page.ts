@@ -5,11 +5,11 @@ import * as L from 'leaflet';
 import { PixelTragectoryPage } from '../pixel-tragectory/pixel-tragectory.page';
 
 @Component({
-  selector: 'app-relatorio',
-  templateUrl: 'relatorio.page.html',
-  styleUrls: ['relatorio.page.scss'],
+  selector: 'app-report',
+  templateUrl: 'report.page.html',
+  styleUrls: ['report.page.scss'],
 })
-export class RelatorioPage implements OnInit {
+export class ReportPage implements OnInit {
   map: any;
   viewModeFlag = false;
   meusMapas = L.geoJSON(null, {});
