@@ -262,21 +262,24 @@ export class HomePage implements OnInit {
   }
 
   async atualizaFieldsAuthData(userId, isDelete?) {
-    this.fieldService.getAllFieldsByUser(userId).then(
+    await this.fieldService.getAllFieldsByUser(userId).then(
       async (responseFields: any) => {
         // TODO: vai mudar aqui se virar geojson
-        this.authData.geoJsonFields = responseFields.data.geojson;
+        this.authData.geoJsonFields = await responseFields.data.geojson;
         console.log(this.authData.geoJsonFields);
+        if (isDelete) {
+          console.log('é delete');
+          await this.map.removeLayer(this.meusMapas);
+          console.log(this.map);
+          this.meusMapas = L.geoJSON(null, {});
+          console.log(this.meusMapas);
+          this.layersControl.overlays.meus_mapas = this.meusMapas;
+          await this.map.addLayer(this.meusMapas);
+          this.selectedPolygon.showGeotiff = false;
+        }
+
         if (this.authData.geoJsonFields) {
-          if (isDelete) {
-            this.map.removeLayer(this.meusMapas);
-            this.meusMapas = L.geoJSON(null, {});
-            this.meusMapas.addData(this.authData.geoJsonFields);
-            this.layersControl.overlays.meus_mapas = this.meusMapas;
-            this.map.addLayer(this.meusMapas);
-          } else {
-            this.meusMapas.addData(this.authData.geoJsonFields);
-          }
+          this.meusMapas.addData(this.authData.geoJsonFields);
           console.log('atualiza fields meus mapas');
           this.selectPolygon();
         }
@@ -473,10 +476,10 @@ export class HomePage implements OnInit {
 
   async deleteSelectedField() {
     this.fieldService.deleteField(this.selectedPolygon.id).then(
-      (response) => {
+      async (response) => {
         // se deletou da base de dados, tem que atualizar os campos do usuario
         // e tem tbm que apagar a layer com potencial hidrico referente ao campo (se tiver uma)
-        this.atualizaFieldsAuthData(this.authData.user_id, true);
+        await this.atualizaFieldsAuthData(this.authData.user_id, true);
         this.map.removeLayer(
           this.layersControl.overlays[this.selectedPolygon.name]
         );
