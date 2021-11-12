@@ -4,9 +4,10 @@ import {
   AlertController,
   ModalController,
   NavParams,
+  Platform,
 } from '@ionic/angular';
 import { Chart } from 'angular-highcharts';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 
 @Component({
@@ -14,7 +15,7 @@ import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
   templateUrl: 'pixel-tragectory.page.html',
   styleUrls: ['pixel-tragectory.page.scss'],
 })
-export class PixelTragectoryPage implements OnInit {
+export class PixelTragectoryPage {
   public latLong: any = {};
   mesesPixel = [];
   valuesPixel = [];
@@ -26,15 +27,17 @@ export class PixelTragectoryPage implements OnInit {
     public alertController: AlertController,
     private navParams: NavParams,
     private modalCtrl: ModalController,
-    private screenOrientation: ScreenOrientation
+    private screenOrientation: ScreenOrientation,
+    private platform: Platform
   ) {
     this.latLong = this.navParams.get('latLong');
-    this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.LANDSCAPE);
-
     this.getPixelValues();
+    if (this.platform.is('cordova')){
+      this.platform.ready().then(() => {
+        this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.LANDSCAPE);
+      });
+    }
   }
-
-  ngOnInit() {}
 
   getDateRasterMaps() {
     this.fieldService.getDateOfGenerateMaps().then(
@@ -94,5 +97,13 @@ export class PixelTragectoryPage implements OnInit {
 
   fechar() {
     this.modalCtrl.dismiss();
+  }
+
+  ionViewWillLeave() {
+    if (this.platform.is('cordova')){
+      this.platform.ready().then(() => {
+        this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+      });
+    }
   }
 }

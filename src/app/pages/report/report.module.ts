@@ -12,6 +12,7 @@ import { AppHeaderModule } from 'src/app/components/app-header/app-header.module
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { LeafletDrawModule } from '@asymmetrik/ngx-leaflet-draw';
 import { PixelTragectoryPage } from '../pixel-tragectory/pixel-tragectory.page';
+import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 
 const routes: Routes = [
   {
