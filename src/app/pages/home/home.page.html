@@ -17,10 +17,9 @@
     <ion-col>
       <div leaflet [leafletOptions]="options" [leafletLayersControl]="layersControl"
         (leafletMapReady)="onMapReady($event)">
-        <div *ngIf="campoControl == 1 || campoControl == 2 || campoControl == 3" leafletDraw
+        <div *ngIf="campoControl >= 1 && campoControl <= 3" leafletDraw
           [leafletDrawOptions]="drawOptions" [leafletDrawLocal]="drawLocal" (leafletDrawCreated)="onDrawCreated($event)"
-          (leafletDrawReady)="onDrawReady($event)" (leafletDrawStart)="onDrawStart($event)"
-          (leafletDrawDeleted)="onDrawDeleted($event)">
+          (leafletDrawReady)="onDrawReady($event)" (leafletDrawStart)="onDrawStart($event)">
           <div [leafletLayer]="drawItems"></div>
         </div>
       </div>
