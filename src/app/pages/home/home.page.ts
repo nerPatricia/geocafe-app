@@ -186,10 +186,11 @@ export class HomePage implements OnInit {
     this.kmlMaps.eachLayer((layers) => {
       layers.on('click', (layerClicada) => {
         if (this.campoControl !== 1 && !this.selecionaAreaDoKML) {
-          // para de pegar o evento no click
-          // TODO: parece que ta com bug aqui
+          // se não for modo de seleção de áreas cafeeiras
+          // então para de pegar o evento no click
           this.map.originalEvent.preventDefault();
         }
+        // abre o modal para dar um nome ao campo
         this.presentModal('center-modal', {
           type: 'nomeCampoSelecionado',
           layer: layerClicada,
@@ -304,10 +305,6 @@ export class HomePage implements OnInit {
     console.log('ON DRAW CREATED');
   }
 
-  onDrawDeleted(e: any) {
-    console.log('ON DRAW DELETED');
-  }
-
   // TODO: verificar se vale a pena mesmo manter isso daqui
   // já que as unicas opções de ficaram foi editar poligono e apagar tudo
   setDrawOption() {
@@ -363,13 +360,13 @@ export class HomePage implements OnInit {
             // TODO: FIX RANGE - min e max do potencial hidrico
             const min = -7;
             const range = 7;
-            // console.log(Chroma.brewer); // exibe escalas de cores pré prontas
             const scale = Chroma.scale(this.newPalette());
             const newLayer = new GeoRasterLayer({
               georaster,
               opacity: 0.9,
               pixelValuesToColorFn: (pixelValues) => {
-                const pixelValue = pixelValues[0]; // só tem uma banda no georaster, então pega o [0]
+                // só existe uma banda no georaster, então pega o [0]
+                const pixelValue = pixelValues[0];
                 // se o valor for 0, então não retorna uma cor
                 if (pixelValue === 0) {
                   return null;
@@ -379,7 +376,8 @@ export class HomePage implements OnInit {
                 const color = scale(scaledPixelValue).hex();
                 return color;
               },
-              resolution: 256, // optional parameter for adjusting display resolution
+              // parametro opcional para ajustar a resolução
+              resolution: 256,
             });
 
             this.layersControl.overlays[fieldData.name] = newLayer;
@@ -390,8 +388,10 @@ export class HomePage implements OnInit {
             this.selectedPolygon.name = fieldData.name;
             this.selectedPolygon.area = fieldData.area;
 
-            this.map.fitBounds(newLayer.getBounds()); // trás a nova layer como prioritária
-            this.getValuesOnClick(georaster); // pega os valores de potencial hidrico no click
+            // trás a nova layer como prioritária
+            this.map.fitBounds(newLayer.getBounds());
+            // pega os valores de potencial hidrico no click
+            this.getValuesOnClick(georaster);
             this.verifica.detectChanges();
           });
         });
