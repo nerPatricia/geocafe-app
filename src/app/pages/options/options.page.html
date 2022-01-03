@@ -17,6 +17,10 @@
       <ion-icon slot="start" name="information-circle-outline"></ion-icon>
       <p>Informações do Projeto</p>
     </ion-item>
+    <ion-item (click)="potencialHidricoModal()">
+      <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+      <p>Faixas de Potencial Hídrico</p>
+    </ion-item>
     <ion-item (click)="logout()">
       <ion-icon slot="start" name="log-out-outline"></ion-icon>
       <p>Logout</p>
@@ -35,15 +39,5 @@
         </ion-col>
       </ion-row>
     </ion-item>
-    <!-- <ion-item>
-      <ion-row style="max-width: 100%; width: 100%;">
-        <ion-col class="alinha" size="12">
-          <p>Vanessa C. O. Souza</p>
-          <p>Patrı́cia C. da Silva</p>
-          <p>Margarete M. L. Volpato</p>
-          <p>Vânia A. Silva</p>
-        </ion-col>
-      </ion-row>
-    </ion-item> -->
   </ion-list>
 </ion-content>

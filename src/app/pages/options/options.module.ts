@@ -1,3 +1,4 @@
+import { LegendInfoModalModule } from './../../components/legend-info-modal/legend-info-modal.modules';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
@@ -19,7 +20,8 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     AppHeaderModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    LegendInfoModalModule
   ],
   declarations: [OptionsPage]
 })

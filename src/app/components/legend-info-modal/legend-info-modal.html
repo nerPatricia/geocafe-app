@@ -1,0 +1,31 @@
+<ion-toolbar style="font-family: var(--ion-font-family, inherit);">
+  <ion-title style="color: #000; font-size: 18px;">Faixas de Potencial Hídrico:</ion-title>
+</ion-toolbar>
+
+<ion-content>
+  <ion-row>
+    <ion-col size="12" style="display: flex; justify-content: center;">
+      <div style="background: #00d0ff;" class="legenda">0</div>
+      <div style="background: #49d402;" class="legenda">-1</div>
+      <div style="background: #f3ec0f;" class="legenda">-2</div>
+      <div style="background: #f3a20f;" class="legenda">-3</div>
+      <div style="background: #f37d0f;" class="legenda">-4</div>
+      <div style="background: #f30f0f;" class="legenda">-5</div>
+    </ion-col>
+    <ion-col size="12" class="text" style="font-family: var(--ion-font-family, inherit);">
+      <p>Valores de &#936; até 0,5: Cafeeiros hidratados.</p>
+      <p>Valores de &#936; entre 0,5 MPa e -1,4 MPa: Cafeeiros não conseguem recuperar à noite a àgua perdida durante o dia, mas ainda apresentam bom estado de hidratação.</p>
+      <p>Valores de &#936; entre -1,5 MPa e -2,4 MPa: Cafeeiros em fase inicial de desidratação, valores pelos quais ocorrem limitações estomáticas, reduzindo as taxas fotossintéticas.</p>
+      <p>Valores de &#936; entre -2,5 MPa e -3,5 MPa: Cafeeiros com desidratação moderada a severa.</p>
+      <p>Valores de &#936; menores que -3,5 MPa: Cafeeiros com desidratação severa.</p>
+    </ion-col>
+  </ion-row>
+</ion-content>
+
+<ion-row class="justify">
+  <ion-col size="2">
+    <button class="btn-ok" style="font-family: var(--ion-font-family, inherit);" (click)="dismiss()" ion-button expand="block">
+      OK
+    </button>
+  </ion-col>
+</ion-row>

@@ -1,3 +1,4 @@
+import { SelectFieldsModalComponent } from './../../components/select-fields-modal/select-fields-modal';
 import { drawLocal } from './drawLocalOptions';
 import swal from 'sweetalert2';
 import { SelectDateModalComponent } from './../../components/select-date-modal/select-date-modal';
@@ -529,6 +530,29 @@ export class HomePage implements OnInit {
         }
       }
     });
+    return await modal.present();
+  }
+
+  async showAllFields(cssClass = 'maior-center-modal') {
+    const modal = await this.modalCtrl.create({
+      component: SelectFieldsModalComponent,
+      cssClass,
+      backdropDismiss: false,
+      componentProps: { props: this.authData.geoJsonFields.features},
+    });
+
+    modal.onDidDismiss().then((response: any) => {
+      if (response) {
+        if (response.data) {
+          console.log(response.data.event);
+          this.map.setView(new L.LatLng(response.data.event[1], response.data.event[0]), 17);
+          // TODO: converter os coordinates do AuthData no BACKEND pra lat e long, hoje ta vindo long e lat
+          // tudo isso pra poder usar essa função de baixo ao invés da de cima
+          // this.map.fitBounds(response.data.event);
+        }
+      }
+    });
+
     return await modal.present();
   }
 

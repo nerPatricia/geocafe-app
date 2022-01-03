@@ -10,6 +10,14 @@
     </ion-col>
   </ion-row>
 </ion-header> -->
+<ion-row class="btn-position" *ngIf="authData?.geoJsonFields">
+  <ion-col>
+    <ion-button class="campos-btn" (click)="showAllFields()">
+      <ion-icon name="apps-outline"></ion-icon>
+    </ion-button>
+  </ion-col>
+</ion-row>
+
 
 <ion-content class="ion-no-padding">
   <ion-row class="fullscreen" [style.height]="campoControl > 1  ? '88%' : selectedPolygon.showGeotiff ? '83%' : null"
