@@ -104,7 +104,7 @@ ion-content {
 // estilo de modal que fica no centro da tela
 // modal maior
 .maior-center-modal .modal-wrapper {
-    height: 28%; // 45%
+    height: 29%; // 45%
     margin: 20px;
     border-radius: 20px;
     display: block;
@@ -117,6 +117,24 @@ ion-content {
     margin: 20px;
     border-radius: 20px;
     display: block;
+}
+
+// estilo de modal que fica no centro da tela
+// modal legenda do potencial hidrico
+.maior-info-modal .modal-wrapper {
+    height: 85%;
+    max-width: 80%;
+    margin: 20px;
+    border-radius: 4px;
+}
+
+// estilo da legenda do potencial hidrico
+.legenda {
+    height: 20px;
+    width: 30px;
+    text-align: center;
+    border: solid 1px #707070;
+    border-radius: 3px;
 }
 
 // deixa o backdrop do modal transparente

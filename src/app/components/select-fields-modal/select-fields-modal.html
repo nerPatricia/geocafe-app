@@ -1,12 +1,12 @@
 <ion-toolbar>
-  <ion-title class="ion-text-center titulo">Informações sobre o campo</ion-title>
+  <ion-title class="ion-text-center titulo">Visualizar campo:</ion-title>
 </ion-toolbar>
 
 <ion-row class="row-select">
   <ion-col>
-    <ion-label>Selecione uma data para visualizar o potencial hidrico: </ion-label>
+    <ion-label>Selecione um campo para visualizar no mapa: </ion-label>
     <ion-select placeholder="Selecione" (ionChange)="saveEventDetails($event)" #selectDateRaster>
-      <ion-select-option *ngFor="let data of datasMapasGeoTiff" [value]="data">{{data | date:'dd/MM/yyyy'}}
+      <ion-select-option *ngFor="let field of props" [value]="field">{{field.properties.name}}
       </ion-select-option>
     </ion-select>
   </ion-col>

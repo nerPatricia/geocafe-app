@@ -1,3 +1,4 @@
+import { SelectFieldsModalModule } from './../../components/select-fields-modal/select-fields-modal.modules';
 import { SelectDateModalModule } from './../../components/select-date-modal/select-date-modal.module';
 import { FieldService } from './../../service/field.service';
 import { CampoModalModule } from '../../components/campo-modal/campo-modal.module';
@@ -29,7 +30,8 @@ const routes: Routes = [
     LeafletModule,
     LeafletDrawModule,
     CampoModalModule,
-    SelectDateModalModule
+    SelectDateModalModule,
+    SelectFieldsModalModule
   ],
   declarations: [HomePage],
   providers: [LoadingService, FieldService]
