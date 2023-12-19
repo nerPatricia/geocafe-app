@@ -1,8 +1,8 @@
 # REGADOR
 
 ## PRÉ-REQUISITOS
-- Ionic
-- Node
+- Ionic v6.16.3
+- Node v16.13.1
 - Android Studio (para gerar um APK)
 
 ## INICIANDO
